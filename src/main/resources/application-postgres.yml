@@ -1,0 +1,29 @@
+# postgres
+database:
+  url: jdbc:postgresql://localhost:5432/db
+  username: postgres
+  password: postgres
+  name: db
+
+spring:
+  datasource:
+    platform: postgres
+    url: ${database.url}
+    driverClassName: org.postgresql.Driver
+    username: ${database.username}
+    password: ${database.password}
+  jpa:
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: none
+      naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      format_sql: true
+
+#  flyway:
+#    user: ${database.username}
+#    password: ${database.password}
+#    schemas: ${database.schema}
+#    url: ${database.url}

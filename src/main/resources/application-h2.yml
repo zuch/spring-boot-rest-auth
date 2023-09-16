@@ -1,0 +1,28 @@
+# h2
+database:
+  url: jdbc:h2:mem:test
+  username: sa
+  password: password
+  name: test
+
+spring:
+  datasource:
+    platform: h2
+    url: ${database.url}
+    driverClassName: org.h2.Driver
+    username: ${database.username}
+    password: ${database.password}
+  jpa:
+    database: H2
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.H2Dialect
+      ddl-auto: create-drop
+#  flyway:
+#    user: ${database.username}
+#    password: ${database.password}
+#    schemas: ${database.schema}
+#    url: ${database.url}
+  h2:
+    console: enabled
