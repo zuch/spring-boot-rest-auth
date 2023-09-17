@@ -1,6 +1,5 @@
 package com.github.zuch.onboarding.model;
 
-import com.networknt.schema.ValidationMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

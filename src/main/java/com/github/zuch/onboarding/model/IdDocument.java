@@ -1,5 +1,7 @@
 package com.github.zuch.onboarding.model;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class IdDocument {
 
+    @Enumerated(EnumType.STRING)
     private IdType type;
     private String countryCode;
     private LocalDate issueDate;

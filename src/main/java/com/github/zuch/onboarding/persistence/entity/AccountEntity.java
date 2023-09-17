@@ -1,7 +1,13 @@
 package com.github.zuch.onboarding.persistence.entity;
 
+import com.github.zuch.onboarding.model.AccountType;
+import com.github.zuch.onboarding.model.Address;
+import com.github.zuch.onboarding.model.IdDocument;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -10,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -24,16 +31,22 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class AccountEntity {
 
-    //TODO consider IBAN as Primary Key
     @Id
     @Column(unique = true)
     private String iban;
 
     private String name;
-    private String address;
+    private String surName;
+
+    @Embedded
+    private Address address;
     private LocalDate dateOfBirth;
-    private String idDocument;
+
+    @Embedded
+    private IdDocument idDocument;
     private String username;
-    private String accountBalance;
-    private String typeOfAccount;
+    private BigDecimal accountBalance;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType typeOfAccount;
 }

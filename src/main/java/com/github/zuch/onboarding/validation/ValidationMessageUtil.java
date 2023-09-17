@@ -1,4 +1,4 @@
-package com.github.zuch.onboarding.util;
+package com.github.zuch.onboarding.validation;
 
 import com.github.zuch.onboarding.model.Validation;
 import org.springframework.stereotype.Component;

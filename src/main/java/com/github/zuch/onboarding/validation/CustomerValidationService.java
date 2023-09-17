@@ -1,14 +1,14 @@
-package com.github.zuch.onboarding.service;
+package com.github.zuch.onboarding.validation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.zuch.onboarding.model.IdDocument;
+import com.github.zuch.onboarding.extractor.RegistrationExtractor;
 import com.github.zuch.onboarding.model.Registration;
-import com.github.zuch.onboarding.model.RegistrationResponse;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.config.AppConfigProperties;
-import com.github.zuch.onboarding.util.ValidationMessageUtil;
+import com.github.zuch.onboarding.persistence.AccountRepository;
+import com.github.zuch.onboarding.persistence.entity.AccountEntity;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -19,10 +19,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -32,6 +32,7 @@ public class CustomerValidationService {
     private static final String REGISTRATION_VALIDATION_SCHEMA_PATH = "validation/RegistrationSchema.json";
 
     private final ObjectMapper objectMapper;
+    private final AccountRepository accountRepository;
     private final AppConfigProperties appConfigProperties;
     private final ValidationMessageUtil validationMessageUtil;
 
@@ -47,8 +48,6 @@ public class CustomerValidationService {
      * @throws JsonProcessingException exception reading path to Schema Rules json file
      */
     public Validation validateRegistration(final Registration registration) throws JsonProcessingException {
-        //final RegistrationResponse response = new RegistrationResponse();
-
         // JSON Schema Validation
         final Set<ValidationMessage> validationResult = validateRegistrationJsonStructure(registration);
         if (!validationResult.isEmpty()) { //json schema validation failed
@@ -58,6 +57,8 @@ public class CustomerValidationService {
             final List<String> customValidationMessages = new ArrayList<>();
 
             isValidCountyCode(registration, customValidationMessages);
+            isValidDateOfBirth(registration, customValidationMessages);
+            isValidUserName(registration, customValidationMessages);
 
             if (!customValidationMessages.isEmpty()) { //custom validation error found
                 return validationMessageUtil.createValidationFailed(customValidationMessages);
@@ -67,6 +68,8 @@ public class CustomerValidationService {
         }
     }
 
+    // ----------------- json schema validation -----------------
+
     /**
      * Returns a set of JSON Schema Validation messages found by checking a Registration against a Schema Rules json file
      *
@@ -74,7 +77,7 @@ public class CustomerValidationService {
      * @return set of JSON Schema Validation messages
      * @throws JsonProcessingException exception reading path to Schema Rules json file
      */
-    private Set<ValidationMessage> validateRegistrationJsonStructure(Registration registration) throws JsonProcessingException {
+    private Set<ValidationMessage> validateRegistrationJsonStructure(final Registration registration) throws JsonProcessingException {
         // get JsonSchema from schemaPath
         final JsonSchema schema = getJsonSchema(REGISTRATION_VALIDATION_SCHEMA_PATH);
         // parse json payload to String
@@ -90,7 +93,7 @@ public class CustomerValidationService {
      * @param schemaPath path to Schema Rules json file
      * @return JsonSchema object
      */
-    private JsonSchema getJsonSchema(String schemaPath) {
+    private JsonSchema getJsonSchema(final String schemaPath) {
         return schemaCache.computeIfAbsent(schemaPath, path -> {
             final ClassPathResource res = new ClassPathResource(schemaPath);
             final JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
@@ -102,6 +105,7 @@ public class CustomerValidationService {
         });
     }
 
+    // ----------------- custom validation rules -----------------
 
     /**
      * Any customer outside The Netherlands, Belgium and Germany must not be able to register and create an account.
@@ -110,18 +114,42 @@ public class CustomerValidationService {
      * @param registration             payload
      * @param customValidationMessages
      */
-    public void isValidCountyCode(final Registration registration, List<String> customValidationMessages) {
+    public void isValidCountyCode(final Registration registration, final List<String> customValidationMessages) {
         final List<String> countryAllowedList = appConfigProperties.getCountryAllowedList();
-        final String countryCode = extractCountryCode(registration);
+        final String countryCode = RegistrationExtractor.extractIdCountryCode(registration);
         if (countryCode.isEmpty() || countryAllowedList.stream().noneMatch(countryCode::contains)) {
-            final String validationMessage = String.format("CountyCode passed [%s] is not valid or one of the allowed countries", countryCode);
+            final String validationMessage = String.format("CountyCode [%s] is not valid or one of the allowed countries", countryCode);
             customValidationMessages.add(validationMessage);
         }
     }
 
-    // ----------------- extractors -----------------
+    /**
+     * Customer must provide a unique username. If a username already exists, they should receive an error.
+     *
+     * @param registration             payload
+     * @param customValidationMessages
+     */
+    public void isValidDateOfBirth(final Registration registration, final List<String> customValidationMessages) {
+        final LocalDate dateOfBirth = RegistrationExtractor.extractDateOfBirth(registration);
+        final LocalDate eighteenYearsInPast = LocalDate.now().minusYears(18);
+        if (dateOfBirth.isAfter(eighteenYearsInPast)) { // < 18 years
+            final String validationMessage = "Customer must be older than 18 years old to register for an account";
+            customValidationMessages.add(validationMessage);
+        }
+    }
 
-    private String extractCountryCode(final Registration registration) {
-        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getCountryCode).orElse("");
+    /**
+     * Customers above 18 years old are only allowed to register and create an account
+     *
+     * @param registration             payload
+     * @param customValidationMessages
+     */
+    public void isValidUserName(final Registration registration, final List<String> customValidationMessages) {
+        final String username = RegistrationExtractor.extractUsername(registration);
+        final AccountEntity account = accountRepository.findByUsername(username);
+        if (username.isEmpty() || account != null) { // < 18 years
+            final String validationMessage = String.format("UserName [%s] already exists", username);
+            customValidationMessages.add(validationMessage);
+        }
     }
 }

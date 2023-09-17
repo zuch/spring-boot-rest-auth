@@ -3,7 +3,8 @@ package com.github.zuch.onboarding.service;
 import com.github.zuch.onboarding.model.Registration;
 import com.github.zuch.onboarding.model.RegistrationResponse;
 import com.github.zuch.onboarding.model.Validation;
-import com.github.zuch.onboarding.util.ValidationMessageUtil;
+import com.github.zuch.onboarding.validation.ValidationMessageUtil;
+import com.github.zuch.onboarding.validation.CustomerValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class CustomerService {
             // validation
             final Validation validation = customerValidationService.validateRegistration(registration);
             response.setValidation(validation);
+
+            // persist registration
+           // final
+
         } catch (final Exception e) {
             log.error("Error while processing Customer Registration", e);
 

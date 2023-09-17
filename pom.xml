@@ -22,6 +22,7 @@
         <json-schema-validator.version>1.0.87</json-schema-validator.version>
         <commons-lang3.version>3.13.0</commons-lang3.version>
         <springfox.version>3.0.0</springfox.version>
+        <generex.version>1.0.2</generex.version>
     </properties>
 
     <dependencies>
@@ -83,6 +84,14 @@
             <artifactId>springfox-core</artifactId>
             <version>${springfox.version}</version>
         </dependency>
+
+        <!-- generex -->
+        <dependency>
+            <groupId>com.github.mifmif</groupId>
+            <artifactId>generex</artifactId>
+            <version>${generex.version}</version>
+        </dependency>
+
 
         <!-- Test -->
         <dependency>
