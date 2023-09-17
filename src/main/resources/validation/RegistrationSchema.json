@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Registration",
+  "description": "A registration for a customer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The first name of a customer",
+      "type": "string"
+    },
+    "surName": {
+      "description": "The last name of a customer",
+      "type": "string"
+    },
+    "address": {
+      "type": "object",
+      "description": "The address of a customer",
+      "properties": {
+        "street": {
+          "description": "The street of where a customer lives",
+          "type": "string"
+        },
+        "houseNumber": {
+          "description": "The house number of where a customer lives",
+          "type": "string"
+        },
+        "postCode": {
+          "description": "The post code of where a customer lives",
+          "type": "string"
+        },
+        "city": {
+          "description": "The city of where a customer lives",
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "houseNumber",
+        "postCode",
+        "city"
+      ]
+    },
+    "dateOfBirth": {
+      "description": "The date of birth of a customer",
+      "type": "string",
+      "format": "date"
+    },
+    "idDocument": {
+      "type": "object",
+      "description": "The id document of a customer",
+      "properties": {
+        "type": {
+          "description": "The ID document type a customer lives [ID_CARD, DRIVERS_LICENCE, PASSPORT]",
+          "type": "string"
+        },
+        "countryCode": {
+          "description": "The ISO-3166 2 digit code of the country where a customer's ID was issued",
+          "type": "string"
+        },
+        "issueDate": {
+          "description": "The issue date for the customer's ID",
+          "type": "string",
+          "format": "date"
+        },
+        "expiryDate": {
+          "description": "The expiry date for the customer's ID",
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "type",
+        "countryCode",
+        "issueDate",
+        "expiryDate"
+      ]
+    },
+    "username": {
+      "description": "The username chosen by a customer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "surName",
+    "address",
+    "dateOfBirth",
+    "idDocument",
+    "username"
+  ]
+}

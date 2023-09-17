@@ -1,7 +1,7 @@
 package com.github.zuch.onboarding.persistence.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * DAO object for an account of a customer
+ */
 @Getter
 @Setter
 @Builder
@@ -23,7 +26,7 @@ public class AccountEntity {
 
     //TODO consider IBAN as Primary Key
     @Id
-    @GeneratedValue
+    @Column(unique = true)
     private String iban;
 
     private String name;

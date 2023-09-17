@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("h2")
-class CustomerOnboardingApplicationTests {
+class CustomerOnboardingApplicationTest {
 
     @Test
     void contextLoads() {

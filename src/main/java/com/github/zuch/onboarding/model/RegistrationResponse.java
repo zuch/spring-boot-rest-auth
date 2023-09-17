@@ -9,14 +9,15 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Customer {
+@AllArgsConstructor
+public class RegistrationResponse {
 
     private String name;
-    private String address;
+    private Address address;
     private LocalDate dateOfBirth;
-    private String idDocument;
+    private IdDocument idDocument;
     private String username;
+    private Validation validation;
     private String password;
 }

@@ -1,0 +1,18 @@
+{
+  "name": "Keanu",
+  "surName": "Reeves",
+  "address": {
+    "street": "Korte Houtstraat",
+    "houseNumber": "20",
+    "postCode": "2511CD",
+    "city": "Den Haag"
+  },
+  "dateOfBirth": "1964-09-02",
+  "idDocument": {
+    "type": "ID_CARD",
+    "countryCode": "",
+    "issueDate": "2015-02-01",
+    "expiryDate": "2025-01-31"
+  },
+  "username": "theone"
+}

@@ -1,3 +1,19 @@
 spring:
   profiles:
     active: postgres
+  jackson:
+    default-property-inclusion: non_null
+
+app:
+  countryAllowedList:
+    - NL
+    - BE
+    - DE
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG

@@ -43,30 +43,47 @@ mvn clean install
 mvn clean test
 ```
 
+## Swagger UI
+
+The Swagger UI for the endpoints below can be found with this [URL](http://localhost:8080/swagger-ui/) once the application is running
+
 ## Endpoints:
 
-**POST** request to `/register`:
+### **POST** `/register`:
+
+`POST`: `http://localhost:8080/register`
+
+`Content-Type`: `application/json`
+
+Example of a Customer Registration object:
+
+```json
+{
+  "name": "Keanu",
+  "surName": "Reeves",
+  "address": {
+    "street": "Korte Houtstraat",
+    "houseNumber": "20",
+    "postCode": "2511CD",
+    "city": "Den Haag"
+  },
+  "dateOfBirth": "1964-09-02",
+  "idDocument": {
+    "type": "ID_CARD",
+    "countryCode": "NL",
+    "issueDate": "2015-02-01",
+    "expiryDate": "2025-01-31"
+  },
+  "username": "theone"
+}
+```
+
 
 **POST** request to `/logon`:
 
-**GET** request to `/overview/<id>`:
+**GET** request to `/overview`:
 
 **DELETE**, **PUT**, **PATCH** request to any endpoints:
 
 - response code is 405 because the API does not allow deleting or modifying account data
-
-## Data:
-
-Example of a customer JSON object:
-
-```json
-{
-    "name": "Keanu",
-    "surname": "Reeves",
-    "address": "Korte Houtstraat 20, 2511CD, Den Haag",
-    "dateOfBirth": "1964-09-02",
-    "idDocument": "ID_CARD",
-    "username": "theone"
-}
-```
 
