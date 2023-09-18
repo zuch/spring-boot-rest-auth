@@ -21,9 +21,7 @@ spring:
       ddl-auto: none
       naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       format_sql: true
-
-#  flyway:
-#    user: ${database.username}
-#    password: ${database.password}
-#    schemas: ${database.schema}
-#    url: ${database.url}
+  flyway:
+    user: ${database.username}
+    password: ${database.password}
+    url: ${database.url}

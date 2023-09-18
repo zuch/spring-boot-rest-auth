@@ -56,7 +56,7 @@ class CustomerValidationServiceTest {
         Registration registration = objectMapper.readValue(file, Registration.class);
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertTrue(validation.isValid());
@@ -69,7 +69,7 @@ class CustomerValidationServiceTest {
         Registration registration = objectMapper.readValue(file, Registration.class);
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertFalse(validation.isValid());
@@ -89,11 +89,11 @@ class CustomerValidationServiceTest {
         Registration registration = objectMapper.readValue(file, Registration.class);
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertFalse(validation.isValid());
-        assertEquals("CountyCode [] is not valid or one of the allowed countries", validation.getValidationMessages().stream().findFirst().get());
+        assertEquals("$.idDocument.countryCode: is missing but it is required", validation.getValidationMessages().stream().findFirst().get());
     }
 
     @Test
@@ -103,7 +103,7 @@ class CustomerValidationServiceTest {
         Registration registration = objectMapper.readValue(file, Registration.class);
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertFalse(validation.isValid());
@@ -118,7 +118,7 @@ class CustomerValidationServiceTest {
         registration.setDateOfBirth(LocalDate.now().minusYears(17));
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertFalse(validation.isValid());
@@ -131,14 +131,15 @@ class CustomerValidationServiceTest {
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
         Registration registration = objectMapper.readValue(file, Registration.class);
 
+        // persist same customer already
         AccountEntity accountEntity = customerMapper.mapToAccountEntity(registration);
-        AccountEntity saved = accountRepository.save(accountEntity);
+        accountRepository.save(accountEntity);
 
         // when
-        Validation validation = customerValidationService.validateRegistration(registration);
+        Validation validation = customerValidationService.validateReg(registration);
 
         // then
         assertFalse(validation.isValid());
-        assertEquals("UserName [theone] already exists", validation.getValidationMessages().stream().findFirst().get());
+        assertEquals("username [theone] already exists", validation.getValidationMessages().stream().findFirst().get());
     }
 }

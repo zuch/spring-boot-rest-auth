@@ -15,51 +15,55 @@ public class RegistrationExtractor {
 
     // ----------------- extractors -----------------
 
-    public static String extractName(final Registration registration) {
+    public static String name(final Registration registration) {
         return Optional.of(registration).map(Registration::getName).orElse("");
     }
 
-    public static String extractSurName(final Registration registration) {
-        return Optional.of(registration).map(Registration::getSurName).orElse("");
+    public static String surname(final Registration registration) {
+        return Optional.of(registration).map(Registration::getSurname).orElse("");
     }
 
-    public static String extractAddressStreet(final Registration registration) {
+    public static String addressStreet(final Registration registration) {
         return Optional.of(registration).map(Registration::getAddress).map(Address::getStreet).orElse("");
     }
 
-    public static String extractAddressHouseNumber(final Registration registration) {
+    public static String addressHouseNumber(final Registration registration) {
         return Optional.of(registration).map(Registration::getAddress).map(Address::getHouseNumber).orElse("");
     }
 
-    public static String extractAddressPostCode(final Registration registration) {
+    public static String addressPostCode(final Registration registration) {
         return Optional.of(registration).map(Registration::getAddress).map(Address::getPostCode).orElse("");
     }
 
-    public static String extractAddressCity(final Registration registration) {
+    public static String addressCity(final Registration registration) {
         return Optional.of(registration).map(Registration::getAddress).map(Address::getCity).orElse("");
     }
 
-    public static LocalDate extractDateOfBirth(final Registration registration) {
+    public static LocalDate dateOfBirth(final Registration registration) {
         return Optional.of(registration).map(Registration::getDateOfBirth).orElseThrow();
     }
 
-    public static IdType extractIdType(final Registration registration) {
+    public static IdType idType(final Registration registration) {
         return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getType).orElseThrow();
     }
 
-    public static LocalDate extractIdIssueDate(final Registration registration) {
-        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getIssueDate).orElseThrow();
+    public static Integer idNumber(final Registration registration) {
+        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getIdNumber).orElse(0);
     }
 
-    public static LocalDate extractIdExpiryDate(final Registration registration) {
-        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getExpiryDate).orElseThrow();
-    }
-
-    public static String extractIdCountryCode(final Registration registration) {
+    public static String idCountryCode(final Registration registration) {
         return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getCountryCode).orElse("");
     }
 
-    public static String extractUsername(final Registration registration) {
+    public static LocalDate issueDate(final Registration registration) {
+        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getIssueDate).orElseThrow();
+    }
+
+    public static LocalDate idExpiryDate(final Registration registration) {
+        return Optional.of(registration).map(Registration::getIdDocument).map(IdDocument::getExpiryDate).orElseThrow();
+    }
+
+    public static String username(final Registration registration) {
         return Optional.of(registration).map(Registration::getUsername).orElse("");
     }
 }

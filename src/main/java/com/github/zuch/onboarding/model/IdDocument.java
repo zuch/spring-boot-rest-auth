@@ -17,6 +17,7 @@ public class IdDocument {
 
     @Enumerated(EnumType.STRING)
     private IdType type;
+    private int idNumber;
     private String countryCode;
     private LocalDate issueDate;
     private LocalDate expiryDate;

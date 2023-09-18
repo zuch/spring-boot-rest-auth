@@ -2,7 +2,7 @@ spring:
   profiles:
     active: postgres
   jackson:
-    default-property-inclusion: non_null
+    default-property-inclusion: non_empty
 
 app:
   countryAllowedList:

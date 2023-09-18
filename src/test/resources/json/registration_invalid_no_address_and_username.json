@@ -1,6 +1,6 @@
 {
   "name": "Keanu",
-  "surName": "Reeves",
+  "surname": "Reeves",
   "dateOfBirth": "1964-09-02",
   "idDocument": {
     "type": "ID_CARD",

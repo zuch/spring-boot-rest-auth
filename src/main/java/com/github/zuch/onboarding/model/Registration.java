@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class Registration {
 
     private String name;
-    private String surName;
+    private String surname;
     private Address address;
     private LocalDate dateOfBirth;
     private IdDocument idDocument;

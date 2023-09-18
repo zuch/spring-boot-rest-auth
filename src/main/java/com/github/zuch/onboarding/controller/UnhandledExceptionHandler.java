@@ -21,10 +21,4 @@ public class UnhandledExceptionHandler {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
     }
-
-//    @ExceptionHandler({NoHandlerFoundException.class})
-//    public ResponseEntity<ApiErrorResponse> handleNoHandlerFoundException() {
-//        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.NOT_FOUND.value(), "Resource not found");
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
-//    }
 }

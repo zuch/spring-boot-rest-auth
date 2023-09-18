@@ -19,10 +19,10 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.H2Dialect
       ddl-auto: create-drop
-#  flyway:
-#    user: ${database.username}
-#    password: ${database.password}
-#    schemas: ${database.schema}
-#    url: ${database.url}
+  flyway:
+    user: ${database.username}
+    password: ${database.password}
+    schemas: ${database.name}
+    url: ${database.url}
   h2:
     console: enabled

@@ -29,6 +29,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class CustomerValidationService {
+
     private static final String REGISTRATION_VALIDATION_SCHEMA_PATH = "validation/RegistrationSchema.json";
 
     private final ObjectMapper objectMapper;
@@ -47,13 +48,13 @@ public class CustomerValidationService {
      * - or not valid with validation error messages
      * @throws JsonProcessingException exception reading path to Schema Rules json file
      */
-    public Validation validateRegistration(final Registration registration) throws JsonProcessingException {
+    public Validation validateReg(final Registration registration) throws JsonProcessingException {
         // JSON Schema Validation
         final Set<ValidationMessage> validationResult = validateRegistrationJsonStructure(registration);
-        if (!validationResult.isEmpty()) { //json schema validation failed
+        if (!validationResult.isEmpty()) { //JSON Schema Validation
             final List<String> validationMessages = validationResult.stream().map(ValidationMessage::getMessage).toList();
             return validationMessageUtil.createValidationFailed(validationMessages);
-        } else { //check custom validation rules
+        } else { //check Custom validation rules
             final List<String> customValidationMessages = new ArrayList<>();
 
             isValidCountyCode(registration, customValidationMessages);
@@ -116,7 +117,7 @@ public class CustomerValidationService {
      */
     public void isValidCountyCode(final Registration registration, final List<String> customValidationMessages) {
         final List<String> countryAllowedList = appConfigProperties.getCountryAllowedList();
-        final String countryCode = RegistrationExtractor.extractIdCountryCode(registration);
+        final String countryCode = RegistrationExtractor.idCountryCode(registration);
         if (countryCode.isEmpty() || countryAllowedList.stream().noneMatch(countryCode::contains)) {
             final String validationMessage = String.format("CountyCode [%s] is not valid or one of the allowed countries", countryCode);
             customValidationMessages.add(validationMessage);
@@ -130,7 +131,7 @@ public class CustomerValidationService {
      * @param customValidationMessages
      */
     public void isValidDateOfBirth(final Registration registration, final List<String> customValidationMessages) {
-        final LocalDate dateOfBirth = RegistrationExtractor.extractDateOfBirth(registration);
+        final LocalDate dateOfBirth = RegistrationExtractor.dateOfBirth(registration);
         final LocalDate eighteenYearsInPast = LocalDate.now().minusYears(18);
         if (dateOfBirth.isAfter(eighteenYearsInPast)) { // < 18 years
             final String validationMessage = "Customer must be older than 18 years old to register for an account";
@@ -145,10 +146,10 @@ public class CustomerValidationService {
      * @param customValidationMessages
      */
     public void isValidUserName(final Registration registration, final List<String> customValidationMessages) {
-        final String username = RegistrationExtractor.extractUsername(registration);
+        final String username = RegistrationExtractor.username(registration);
         final AccountEntity account = accountRepository.findByUsername(username);
-        if (username.isEmpty() || account != null) { // < 18 years
-            final String validationMessage = String.format("UserName [%s] already exists", username);
+        if (username.isEmpty() || account != null) {
+            final String validationMessage = String.format("username [%s] already exists", username);
             customValidationMessages.add(validationMessage);
         }
     }

@@ -8,7 +8,7 @@
       "description": "The first name of a customer",
       "type": "string"
     },
-    "surName": {
+    "surname": {
       "description": "The last name of a customer",
       "type": "string"
     },
@@ -50,8 +50,12 @@
       "description": "The id document of a customer",
       "properties": {
         "type": {
-          "description": "The ID document type a customer lives [ID_CARD, DRIVERS_LICENCE, PASSPORT]",
+          "description": "The ID document type a customer [ID_CARD, DRIVERS_LICENCE, PASSPORT]",
           "type": "string"
+        },
+        "idNumber": {
+          "description": "The ID number of a customer",
+          "type": "number"
         },
         "countryCode": {
           "description": "The ISO-3166 2 digit code of the country where a customer's ID was issued",
@@ -82,7 +86,7 @@
   },
   "required": [
     "name",
-    "surName",
+    "surname",
     "address",
     "dateOfBirth",
     "idDocument",

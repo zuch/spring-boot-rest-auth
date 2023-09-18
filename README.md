@@ -60,7 +60,7 @@ Example of a Customer Registration object:
 ```json
 {
   "name": "Keanu",
-  "surName": "Reeves",
+  "surname": "Reeves",
   "address": {
     "street": "Korte Houtstraat",
     "houseNumber": "20",
@@ -70,6 +70,7 @@ Example of a Customer Registration object:
   "dateOfBirth": "1964-09-02",
   "idDocument": {
     "type": "ID_CARD",
+    "idNumber": 12345678,
     "countryCode": "NL",
     "issueDate": "2015-02-01",
     "expiryDate": "2025-01-31"
