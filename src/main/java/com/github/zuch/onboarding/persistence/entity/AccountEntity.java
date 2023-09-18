@@ -30,7 +30,6 @@ import java.time.LocalDate;
 public class AccountEntity {
 
     @Id
-    //@Column(unique = true)
     private String iban;
 
     private String name;

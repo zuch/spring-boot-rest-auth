@@ -3,7 +3,7 @@ package com.github.zuch.onboarding.extractor;
 import com.github.zuch.onboarding.model.Address;
 import com.github.zuch.onboarding.model.IdDocument;
 import com.github.zuch.onboarding.model.IdType;
-import com.github.zuch.onboarding.model.Registration;
+import com.github.zuch.onboarding.model.request.Registration;
 
 import java.time.LocalDate;
 import java.util.Optional;

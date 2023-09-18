@@ -4,8 +4,8 @@ import com.github.zuch.onboarding.extractor.RegistrationExtractor;
 import com.github.zuch.onboarding.model.AccountType;
 import com.github.zuch.onboarding.model.Address;
 import com.github.zuch.onboarding.model.IdDocument;
-import com.github.zuch.onboarding.model.Registration;
-import com.github.zuch.onboarding.model.RegistrationResponse;
+import com.github.zuch.onboarding.model.request.Registration;
+import com.github.zuch.onboarding.model.response.RegistrationResponse;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.persistence.entity.AccountEntity;
 import org.iban4j.CountryCode;
@@ -64,6 +64,7 @@ public class CustomerMapper {
                 )
                 .validation(validation)
                 .username(accountEntity.getUsername())
+                .iban(accountEntity.getIban())
                 .password(accountEntity.getPassword())
                 .build();
     }

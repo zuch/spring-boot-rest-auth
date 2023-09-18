@@ -1,5 +1,7 @@
-package com.github.zuch.onboarding.model;
+package com.github.zuch.onboarding.model.request;
 
+import com.github.zuch.onboarding.model.Address;
+import com.github.zuch.onboarding.model.IdDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +13,12 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationResponse {
+public class Registration {
 
     private String name;
+    private String surname;
     private Address address;
     private LocalDate dateOfBirth;
     private IdDocument idDocument;
     private String username;
-    private Validation validation;
-    private String password;
 }

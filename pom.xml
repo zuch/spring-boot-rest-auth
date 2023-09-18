@@ -14,7 +14,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <name>account onboarding</name>
-    <description>REST api using Spring Security JWT authentication</description>
+    <description>REST API with Authentication</description>
 
     <properties>
         <java.version>17</java.version>

@@ -2,7 +2,7 @@ package com.github.zuch.onboarding.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.mapper.CustomerMapper;
-import com.github.zuch.onboarding.model.Registration;
+import com.github.zuch.onboarding.model.request.Registration;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.config.AppConfigProperties;
 import com.github.zuch.onboarding.persistence.AccountRepository;

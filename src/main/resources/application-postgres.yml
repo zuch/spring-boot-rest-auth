@@ -24,4 +24,4 @@ spring:
   flyway:
     user: ${database.username}
     password: ${database.password}
-    url: ${database.url}
+    url: ${SPRING_FLYWAY_URL}

@@ -1,8 +1,10 @@
 package com.github.zuch.onboarding.service;
 
 import com.github.zuch.onboarding.mapper.CustomerMapper;
-import com.github.zuch.onboarding.model.Registration;
-import com.github.zuch.onboarding.model.RegistrationResponse;
+import com.github.zuch.onboarding.model.request.LogOn;
+import com.github.zuch.onboarding.model.response.LogOnResponse;
+import com.github.zuch.onboarding.model.request.Registration;
+import com.github.zuch.onboarding.model.response.RegistrationResponse;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.persistence.AccountRepository;
 import com.github.zuch.onboarding.persistence.entity.AccountEntity;
@@ -27,14 +29,13 @@ public class CustomerService {
             // validation
             final Validation validation = customerValidationService.validateReg(registration);
 
-            // persist registration
-            if (validation.isValid()) {
+            if (validation.isValid()) { //valid
                 final AccountEntity accountEntity = mapper.mapToAccountEntity(registration);
-                accountEntity.setPassword(mapper.generatePassword());//set random password
+                accountEntity.setPassword(mapper.generatePassword());// set random password
 
-                final AccountEntity saved = accountRepository.save(accountEntity);//persist
+                final AccountEntity saved = accountRepository.save(accountEntity);// persist registration
                 return mapper.mapToRegResponse(saved, validation);
-            } else {
+            } else { //validation error
                 return mapper.mapToRegResponseException(registration, validation);
             }
         } catch (final Exception e) {
@@ -44,4 +45,15 @@ public class CustomerService {
             return mapper.mapToRegResponseException(registration, validation);
         }
     }
+
+    public LogOnResponse logon(final LogOn logOn) {
+        try {
+
+        } catch (final Exception e) {
+            log.error("Error while processing Logon", e);
+        }
+
+        return LogOnResponse.builder().build();
+    }
+
 }

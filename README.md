@@ -1,38 +1,39 @@
-# REST using Spring Security JWT authentication
+# Spring Boot REST API using Authentication
 
 ## Environment:
+
+Uses:
 
 - Java version: 17
 - Maven version: 3.*
 - Spring Boot version: 3.1.3
 - Database: PostgreSQL 16
-- _docker-compose_ 3.8 to run environment [compatibility-matrix](https://docs.docker.com/compose/compose-file/compose-versioning/#compatibility-matrix)
+
+Required
+
+- _docker-compose_
+  3.8 [compatibility-matrix](https://docs.docker.com/compose/compose-file/compose-versioning/#compatibility-matrix)
+- Only _docker-compose_ required to run environment!
 
 ## Commands
 
 ### run
+
 ```bash
-./run.sh
+docker-compose up
 ```
 
-`run.sh` is a shell script that will maven bundle spring boot app then will execute _docker-compose_ to bundle spring boot app into docker image.
+_docker-compose_ will bundle the spring boot app into docker image.
 
 _docker-compose_ will then start a docker container of the spring boot app together with a postgres container
 
-`NOTE!` The first time you execute `run.sh`, the spring boot app may be trying to reach connection to postgres before available. 
-If so please rerun `run.sh` 
-
-#### terminals to use per operating system:
-
-* `windows` 
-  * git bash 
-  * wsl
-* `macOS`
-    * terminal
-* `linux`
-  * bash
+`NOTE!` The first time you execute `docker-compose up`, the spring boot app may be trying to reach connection to
+postgres before
+available.
+If so please rerun `docker-compose up`
 
 ### build
+
 ```bash
 mvn clean install
 ```
@@ -43,9 +44,11 @@ mvn clean install
 mvn clean test
 ```
 
-## Swagger UI
+## Open API
 
-The Swagger UI for the endpoints below can be found with this [URL](http://localhost:8080/swagger-ui/) once the application is running
+The Open API UI for the endpoints below can be found with this [URL](http://localhost:8080/swagger-ui/index.html) once
+the
+application is running
 
 ## Endpoints:
 
@@ -54,6 +57,8 @@ The Swagger UI for the endpoints below can be found with this [URL](http://local
 `POST`: `http://localhost:8080/register`
 
 `Content-Type`: `application/json`
+
+`Accept`: `application/json`
 
 Example of a Customer Registration object:
 
@@ -79,10 +84,30 @@ Example of a Customer Registration object:
 }
 ```
 
+### **POST** `/logon`:
 
-**POST** request to `/logon`:
+`POST`: `http://localhost:8080/logon`
 
-**GET** request to `/overview`:
+`Content-Type`: `application/json`
+
+`Accept`: `application/json`
+
+Example of a Customer Logon object:
+
+```json
+{
+  "username": "theone",
+  "password": "w2kfHZriif"
+}
+```
+
+### **GET** request to `/overview`:
+
+`POST`: `http://localhost:8080/logon`
+
+`Content-Type`: `application/json`
+
+`Accept`: `application/json`
 
 **DELETE**, **PUT**, **PATCH** request to any endpoints:
 

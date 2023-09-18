@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.extractor.RegistrationExtractor;
-import com.github.zuch.onboarding.model.Registration;
+import com.github.zuch.onboarding.model.request.Registration;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.config.AppConfigProperties;
 import com.github.zuch.onboarding.persistence.AccountRepository;
