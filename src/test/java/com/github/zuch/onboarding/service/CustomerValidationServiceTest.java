@@ -2,11 +2,11 @@ package com.github.zuch.onboarding.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.mapper.CustomerMapper;
-import com.github.zuch.onboarding.model.request.Registration;
+import com.github.zuch.onboarding.model.request.RegistrationRequest;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.config.AppConfigProperties;
-import com.github.zuch.onboarding.persistence.AccountRepository;
-import com.github.zuch.onboarding.persistence.entity.AccountEntity;
+import com.github.zuch.onboarding.persistence.UserRepository;
+import com.github.zuch.onboarding.persistence.entity.User;
 import com.github.zuch.onboarding.validation.ValidationMessageUtil;
 import com.github.zuch.onboarding.validation.CustomerValidationService;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +36,7 @@ class CustomerValidationServiceTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
     @Autowired
     private AppConfigProperties appConfigProperties;
     @Autowired
@@ -46,17 +46,17 @@ class CustomerValidationServiceTest {
 
     @AfterEach
     public void destroy() {
-        accountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void given_validRegistration_when_ValidationChecked_then_ValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertTrue(validation.isValid());
@@ -66,10 +66,10 @@ class CustomerValidationServiceTest {
     void given_invalidRegistrationNoAddressAndUsername_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_invalid_no_address_and_username.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -86,10 +86,10 @@ class CustomerValidationServiceTest {
     void given_invalidRegistrationEmptyCountryCode_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_invalid_empty_countrycode.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -100,10 +100,10 @@ class CustomerValidationServiceTest {
     void given_invalidRegistrationIncorrectCountryCode_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_invalid_incorrect_countrycode.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -114,11 +114,11 @@ class CustomerValidationServiceTest {
     void given_invalidRegistrationYoungerThan18_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
-        registration.setDateOfBirth(LocalDate.now().minusYears(17));
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        registrationRequest.setDateOfBirth(LocalDate.now().minusYears(17));
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -129,14 +129,14 @@ class CustomerValidationServiceTest {
     void given_invalidRegistrationUsernameAlreadyExists_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        Registration registration = objectMapper.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // persist same customer already
-        AccountEntity accountEntity = customerMapper.mapToAccountEntity(registration);
-        accountRepository.save(accountEntity);
+        User user = customerMapper.mapToUser(registrationRequest);
+        userRepository.save(user);
 
         // when
-        Validation validation = customerValidationService.validateReg(registration);
+        Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());

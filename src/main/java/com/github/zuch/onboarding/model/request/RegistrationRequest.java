@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Registration {
+public class RegistrationRequest {
 
     private String name;
     private String surname;

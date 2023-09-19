@@ -2,10 +2,10 @@ package com.github.zuch.onboarding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.mapper.CustomerMapper;
-import com.github.zuch.onboarding.model.request.Registration;
+import com.github.zuch.onboarding.model.request.RegistrationRequest;
 import com.github.zuch.onboarding.model.response.RegistrationResponse;
-import com.github.zuch.onboarding.persistence.AccountRepository;
-import com.github.zuch.onboarding.persistence.entity.AccountEntity;
+import com.github.zuch.onboarding.persistence.UserRepository;
+import com.github.zuch.onboarding.persistence.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,27 +40,27 @@ class CustomerRestControllerTest {
     @Autowired
     private ResourceLoader resourceLoader;
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     MockMvc mockMvc;
 
     @BeforeEach
     public void setup() {
-        accountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void given_validRegistration_when_PostedToRegisterEndpoint_then_201Persisted() throws Exception {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        Registration registration = om.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
 
         // when
         RegistrationResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
-                                .content(om.writeValueAsString(registration)))
+                                .content(om.writeValueAsString(registrationRequest)))
                         .andDo(print())
                         .andExpect(jsonPath("$.iban", notNullValue()))
                         .andExpect(jsonPath("$.password", notNullValue()))
@@ -74,17 +74,17 @@ class CustomerRestControllerTest {
     void given_invalidRegistration_when_PostedToRegisterAndUserAlreadyPersisted_then_400ValidationError() throws Exception {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        Registration registration = om.readValue(file, Registration.class);
+        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
 
         // persist same customer already
-        AccountEntity accountEntity = customerMapper.mapToAccountEntity(registration);
-        accountRepository.save(accountEntity);
+        User user = customerMapper.mapToUser(registrationRequest);
+        userRepository.save(user);
 
         // when
         RegistrationResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
-                                .content(om.writeValueAsString(registration)))
+                                .content(om.writeValueAsString(registrationRequest)))
                         .andDo(print())
                         .andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString(), RegistrationResponse.class);
 

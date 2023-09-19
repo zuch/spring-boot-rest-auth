@@ -22,6 +22,5 @@ public class RegistrationResponse {
     private IdDocument idDocument;
     private Validation validation;
     private String username;
-    private String iban;
     private String password;
 }

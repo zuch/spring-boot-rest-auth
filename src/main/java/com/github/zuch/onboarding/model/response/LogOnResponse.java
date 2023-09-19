@@ -1,9 +1,12 @@
 package com.github.zuch.onboarding.model.response;
 
+import com.github.zuch.onboarding.model.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -11,5 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LogOnResponse {
 
-
+    private String token;
+    private String type = "Bearer";
+    private String username;
+    private List<String> roles;
+    private Validation validation;
 }

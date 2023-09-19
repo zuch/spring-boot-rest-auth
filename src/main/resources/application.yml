@@ -5,6 +5,8 @@ spring:
     default-property-inclusion: non_empty
 
 app:
+  jwt-secret: "RALCARYCendULashWanalCOweineTIMATENtOrmARBIlbAgrAp"
+  jwt-expiration-ms: 10800000 #3 Hrs
   countryAllowedList:
     - NL
     - BE

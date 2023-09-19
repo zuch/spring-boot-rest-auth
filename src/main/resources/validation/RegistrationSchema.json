@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Registration",
-  "description": "A registration for a customer",
+  "description": "A registration request for a customer",
   "type": "object",
   "properties": {
     "name": {

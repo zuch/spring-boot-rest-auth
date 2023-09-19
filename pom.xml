@@ -23,6 +23,7 @@
         <commons-lang3.version>3.13.0</commons-lang3.version>
         <openapi.version>2.2.0</openapi.version>
         <iban4j.version>3.2.6-RELEASE</iban4j.version>
+        <jjwt-api.version>0.11.5</jjwt-api.version>
     </properties>
 
     <dependencies>
@@ -34,6 +35,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -71,17 +76,37 @@
             <version>${openapi.version}</version>
         </dependency>
 
+<!--        TODO Flyway -->
         <!-- Flyway -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--        </dependency>-->
 
         <!-- iban4j -->
         <dependency>
             <groupId>org.iban4j</groupId>
             <artifactId>iban4j</artifactId>
             <version>${iban4j.version}</version>
+        </dependency>
+
+        <!-- JSON Web Token -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Test -->

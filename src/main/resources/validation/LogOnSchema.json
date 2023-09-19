@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Logon",
+  "description": "A logon request of a customer",
+  "type": "object",
+  "properties": {
+    "username": {
+      "description": "The username of a customer",
+      "type": "string"
+    },
+    "password": {
+      "description": "The password of a customer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "username",
+    "password"
+  ]
+}
