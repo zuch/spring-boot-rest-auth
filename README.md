@@ -60,7 +60,7 @@ application is running
 
 `Accept`: `application/json`
 
-Example of a Customer Registration object:
+#### Example of a Registration request:
 
 ```json
 {
@@ -84,6 +84,37 @@ Example of a Customer Registration object:
 }
 ```
 
+#### Example of a Registration response:
+
+`200`: If Customer Registered successfully
+
+`400`: If validation rule triggered
+
+```json
+{
+  "name": "Keanu",
+  "address": {
+    "street": "Korte Houtstraat",
+    "houseNumber": "20",
+    "postCode": "2511CD",
+    "city": "Den Haag"
+  },
+  "dateOfBirth": "1964-09-02",
+  "idDocument": {
+    "type": "ID_CARD",
+    "idNumber": 12345678,
+    "countryCode": "NL",
+    "issueDate": "2015-02-01",
+    "expiryDate": "2025-01-31"
+  },
+  "validation": {
+    "valid": true
+  },
+  "username": "theone",
+  "password": "t6PsvEp4Bw"
+}
+```
+
 ### **POST** `/logon`:
 
 `POST`: `http://localhost:8080/logon`
@@ -92,7 +123,7 @@ Example of a Customer Registration object:
 
 `Accept`: `application/json`
 
-Example of a Customer Logon object:
+#### Example of a Logon request:
 
 ```json
 {
@@ -101,13 +132,48 @@ Example of a Customer Logon object:
 }
 ```
 
-### **GET** request to `/overview`:
+#### Example of a Logon response:
 
-`POST`: `http://localhost:8080/logon`
+`200`: If Username & Password authorization successfully
 
-`Content-Type`: `application/json`
+`401`: If Username & Password authorization denied
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUxNDk4MzUsImV4cCI6MTY5NTE2MDYzNX0.0a9CnELUsaVi7nnPRLOshn0wnlDjGNCWkqnlq62G8us",
+  "username": "theone",
+  "roles": [
+    "CUSTOMER"
+  ],
+  "validation": {
+    "valid": true
+  }
+}
+```
+
+### **GET** `/overview`:
+
+`GET`: `http://localhost:8080/overview`
 
 `Accept`: `application/json`
+
+`Authorization` : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUxNDk4MzUsImV4cCI6MTY5NTE2MDYzNX0.0a9CnELUsaVi7nnPRLOshn0wnlDjGNCWkqnlq62G8us`
+
+#### Example of a Overview response:
+
+`200`: If JWT Token authorization successfully
+
+`401`: If JWT Token authorization denied
+
+```json
+{
+  "iban": "NL97 XOZK 7476 9247 77",
+  "accountBalance": 13844.08,
+  "typeOfAccount": "SAVINGS",
+  "currency": "EUR",
+  "openingDate": "2023-09-19T21:10:30.958745"
+}
+```
 
 **DELETE**, **PUT**, **PATCH** request to any endpoints:
 

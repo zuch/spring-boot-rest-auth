@@ -29,7 +29,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "roles",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(name= "role_username_idx", columnNames = "username")
         })
 public class Role {
 

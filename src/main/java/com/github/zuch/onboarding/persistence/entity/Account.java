@@ -34,8 +34,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "accounts",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "iban"),
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(name= "acc_iban_idx", columnNames = "iban"),
+                @UniqueConstraint(name= "acc_username_idx", columnNames = "username")
         })
 public class Account {
 

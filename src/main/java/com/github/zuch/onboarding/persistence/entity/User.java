@@ -38,7 +38,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(name = "user_username_idx", columnNames = "username")
         })
 public class User {
 
