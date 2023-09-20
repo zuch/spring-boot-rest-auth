@@ -6,6 +6,7 @@ import com.github.zuch.onboarding.model.request.RegistrationRequest;
 import com.github.zuch.onboarding.model.response.OverviewResponse;
 import com.github.zuch.onboarding.model.response.RegistrationResponse;
 import com.github.zuch.onboarding.service.CustomerService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class CustomerRestController {
     private final CustomerService customerService;
 
     @Operation(summary = "endpoint used to register a new customer")
+    @RateLimiter(name = "rateLimiter")
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegistrationResponse> register(@RequestBody final RegistrationRequest registrationRequest) {
         final RegistrationResponse response = customerService.register(registrationRequest);
@@ -42,6 +44,7 @@ public class CustomerRestController {
 
 
     @Operation(summary = "endpoint used to logon an existing customer")
+    @RateLimiter(name = "rateLimiter")
     @PostMapping(value = "/logon", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LogOnResponse> logon(@RequestBody final LogOnRequest logOnRequest) {
@@ -55,6 +58,7 @@ public class CustomerRestController {
     }
 
     @Operation(summary = "endpoint used to get account overview for an existing customer using JWT Token")
+    @RateLimiter(name = "rateLimiter")
     @GetMapping(value = "/overview", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<OverviewResponse> overview(@RequestHeader Map<String, String> headers) {

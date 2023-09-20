@@ -4,6 +4,14 @@ spring:
   jackson:
     default-property-inclusion: non_empty
 
+resilience4j:
+  ratelimiter:
+    instances:
+      rateLimiter:
+        limit-refresh-period: 1s
+        limit-for-period: 2
+        timeout-duration: 0s
+
 app:
   jwt-secret: "RALCARYCendULashWanalCOweineTIMATENtOrmARBIlbAgrAp"
   jwt-expiration-ms: 10800000 #3 Hrs

@@ -27,11 +27,6 @@ _docker-compose_ will bundle the spring boot app into docker image.
 
 _docker-compose_ will then start a docker container of the spring boot app together with a postgres container
 
-`NOTE!` The first time you execute `docker-compose up`, the spring boot app may be trying to reach connection to
-postgres before
-available.
-If so please rerun `docker-compose up`
-
 ### build
 
 ```bash
@@ -44,6 +39,10 @@ mvn clean install
 mvn clean test
 ```
 
+## PostMan Collection
+
+Import the PostMan Collection with `Customer Onboarding API.postman_collection.json` file found under root location
+
 ## Open API
 
 The Open API UI for the endpoints below can be found with this [URL](http://localhost:8080/swagger-ui/index.html) once
@@ -54,7 +53,7 @@ application is running
 
 ### **POST** `/register`:
 
-`POST`: `http://localhost:8080/register`
+`POST`: http://localhost:8080/register
 
 `Content-Type`: `application/json`
 
@@ -90,6 +89,8 @@ application is running
 
 `400`: If validation rule triggered
 
+`429`: If more than 2 requests per second sent
+
 ```json
 {
   "username": "theone",
@@ -99,7 +100,7 @@ application is running
 
 ### **POST** `/logon`:
 
-`POST`: `http://localhost:8080/logon`
+`POST`: http://localhost:8080/logon
 
 `Content-Type`: `application/json`
 
@@ -120,6 +121,8 @@ application is running
 
 `401`: If Username & Password authorization denied
 
+`429`: If more than 2 requests per second sent
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU"
@@ -128,7 +131,7 @@ application is running
 
 ### **GET** `/overview`:
 
-`GET`: `http://localhost:8080/overview`
+`GET`: http://localhost:8080/overview
 
 `Accept`: `application/json`
 
@@ -140,6 +143,8 @@ application is running
 
 `401`: If JWT Token authorization denied
 
+`429`: If more than 2 requests per second sent
+
 ```json
 {
   "iban": "NL62VLET1423701633",
@@ -149,8 +154,4 @@ application is running
   "openingDate": "2023-09-20T18:17:46.065199"
 }
 ```
-
-**DELETE**, **PUT**, **PATCH** request to any endpoints:
-
-- response code is 405 because the API does not allow deleting or modifying account data
 

@@ -2,6 +2,8 @@ package com.github.zuch.onboarding.controller;
 
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.response.ApiErrorResponse;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,5 +32,22 @@ public class UnhandledExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<Object> handleRequestNotPermitted(final RequestNotPermitted e, final HttpServletRequest request) {
+        log.warn("Request to path [{}] is blocked due to rate-limiting: [{}]", request.getRequestURI(), e.getMessage());
+
+        final String errorMessage = e.getMessage();
+        final ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+                .validation(
+                        Validation.builder()
+                                .valid(false)
+                                .validationMessages(Collections.singleton(errorMessage))
+                                .build()
+                )
+                .build();
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
     }
 }

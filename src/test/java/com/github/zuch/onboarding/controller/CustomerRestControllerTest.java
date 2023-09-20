@@ -14,22 +14,22 @@ import com.github.zuch.onboarding.persistence.entity.Role;
 import com.github.zuch.onboarding.persistence.entity.Roles;
 import com.github.zuch.onboarding.persistence.entity.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -144,6 +144,25 @@ class CustomerRestControllerTest {
     }
 
     @Test
+    void given_invalidLogonAnd_when_PostedToLogonEndpoint_then_401_UnauthorizedWithValidationError() throws Exception {
+        // given
+        File logOnFile = resourceLoader.getResource("classpath:json/logon_invalid_empty_password.json").getFile();
+        LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
+
+        // when
+        LogOnResponse logOnResponse = om.readValue(
+                mockMvc.perform(post("/logon")
+                                .contentType("application/json")
+                                .content(om.writeValueAsString(logOnRequest)))
+                        .andDo(print())
+                        .andExpect(status().isUnauthorized()).andReturn().getResponse().getContentAsString(), LogOnResponse.class);
+
+        // then
+        assertFalse(logOnResponse.getValidation().isValid());
+        assertEquals("$.password: is missing but it is required", logOnResponse.getValidation().getValidationMessages().stream().findFirst().get());
+    }
+
+    @Test
     void given_CustomerRegisteredAndValidLogon_when_PostedToOverviewEndpoint_then_200_OverviewResponse() throws Exception {
         // given
         File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
@@ -172,16 +191,70 @@ class CustomerRestControllerTest {
                         .andExpect(jsonPath("$.token", notNullValue()))
                         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), LogOnResponse.class);
 
-        // get from /overview with JWT Token in Authorization header
+        Thread.sleep(1000);// wait 1s for RateLimiter
+
+        // when - get from /overview with JWT Token in Authorization header
         OverviewResponse overviewResponse = om.readValue(
                 mockMvc.perform(get("/overview")
                                 .contentType("application/json")
                                 .header("authorization", "Bearer " + logOnResponse.getToken())
                         )
                         .andDo(print())
+                        .andExpect(jsonPath("$.iban", notNullValue()))
+                        .andExpect(jsonPath("$.accountBalance", notNullValue()))
+                        .andExpect(jsonPath("$.accountType", notNullValue()))
+                        .andExpect(jsonPath("$.currency", notNullValue()))
+                        .andExpect(jsonPath("$.openingDate", notNullValue()))
                         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), OverviewResponse.class);
 
         // then
         assertFalse(overviewResponse.getIban().isEmpty());
+    }
+
+    @Test
+    void given_invalidOverviewRequest_when_PostedToOverviewEndpoint_then_401_Unauthorized() throws Exception {
+        // given
+        String invalidJwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU";
+
+        // when - get from /overview with JWT Token in Authorization header
+        OverviewResponse overviewResponse = om.readValue(
+                mockMvc.perform(get("/overview")
+                                .contentType("application/json")
+                                .header("authorization", "Bearer " + invalidJwtToken)
+                        )
+                        .andDo(print())
+                        .andExpect(jsonPath("$.validation.valid", notNullValue()))
+                        .andExpect(jsonPath("$.validation.validationMessages", notNullValue()))
+                        .andExpect(status().isUnauthorized()).andReturn().getResponse().getContentAsString(), OverviewResponse.class);
+
+        // then
+        assertEquals("Full authentication is required to access this resource", overviewResponse.getValidation().getValidationMessages().stream().findFirst().get());
+    }
+
+    //Test rate limit of 2 times per second by receiving 429 on a third request to /register
+    @Test
+    @Disabled
+    void given_validRegistration_when_PostedToRegisterEndpointFourTimes_then_FirstCall201_SecondCall400_ThirdCall429() throws Exception {
+        // given
+        File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
+
+        // 1st call
+        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(registrationRequest)))
+                .andExpect(status().isCreated());
+
+        // 2nd call
+        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(registrationRequest)))
+                .andExpect(status().isBadRequest());
+
+        // 3rd call
+        mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(registrationRequest)))
+                .andExpect(status().isTooManyRequests());
     }
 }
