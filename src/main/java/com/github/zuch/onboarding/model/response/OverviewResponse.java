@@ -19,7 +19,7 @@ public class OverviewResponse {
 
     private String iban;
     private BigDecimal accountBalance;
-    private AccountType typeOfAccount;
+    private AccountType accountType;
     private Currency currency;
     private LocalDateTime openingDate;
     private Validation validation;

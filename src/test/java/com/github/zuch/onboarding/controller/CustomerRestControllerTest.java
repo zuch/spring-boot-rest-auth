@@ -78,7 +78,7 @@ class CustomerRestControllerTest {
                         .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), RegistrationResponse.class);
 
         // then
-        assertTrue(response.getValidation().isValid());
+        assertFalse(response.getPassword().isEmpty());
     }
 
     @Test
@@ -140,7 +140,6 @@ class CustomerRestControllerTest {
                         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), LogOnResponse.class);
 
         // then
-        assertTrue(logOnResponse.getValidation().isValid());
         assertFalse(logOnResponse.getToken().isEmpty());
     }
 

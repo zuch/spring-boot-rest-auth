@@ -43,8 +43,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_generator")
-    @SequenceGenerator(name = "user_generator", sequenceName = "user_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_gen")
+    @SequenceGenerator(name = "user_gen", sequenceName = "user_seq")
     private Long id;
 
     @NotBlank

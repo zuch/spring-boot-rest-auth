@@ -15,8 +15,5 @@ import java.util.List;
 public class LogOnResponse {
 
     private String token;
-    private String type = "Bearer";
-    private String username;
-    private List<String> roles;
     private Validation validation;
 }

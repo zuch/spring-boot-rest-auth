@@ -56,10 +56,13 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/register/**").permitAll()
-                                .requestMatchers("/logon/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/register/**").permitAll()
+                            .requestMatchers("/logon/**").permitAll()
+                            .requestMatchers("/swagger-ui.html").permitAll()
+                            .requestMatchers("/v3/api-docs/**").permitAll()
+                            .requestMatchers("/swagger-ui/**").permitAll()
+                            .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());

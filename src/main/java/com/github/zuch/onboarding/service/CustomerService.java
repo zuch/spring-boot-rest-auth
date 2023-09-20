@@ -14,7 +14,6 @@ import com.github.zuch.onboarding.persistence.entity.Account;
 import com.github.zuch.onboarding.persistence.entity.Role;
 import com.github.zuch.onboarding.persistence.entity.User;
 import com.github.zuch.onboarding.security.jwt.JwtUtils;
-import com.github.zuch.onboarding.security.service.UserDetailsImpl;
 import com.github.zuch.onboarding.validation.CustomerValidationService;
 import com.github.zuch.onboarding.validation.ValidationMessageUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -70,12 +67,12 @@ public class CustomerService {
 
                 return mapper.mapToRegResponse(saved, validation, password);
             } else { //validation error
-                return mapper.mapToRegResponseException(registrationRequest, validation);
+                return mapper.mapToRegResponseException(validation);
             }
         } catch (final Exception e) {
             log.error("Error while processing Customer Registration request", e);
             final Validation validation = validationMessageUtil.createValidationFailed(e.getMessage());
-            return mapper.mapToRegResponseException(registrationRequest, validation);
+            return mapper.mapToRegResponseException(validation);
         }
     }
 
@@ -91,12 +88,7 @@ public class CustomerService {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 final String jwt = jwtUtils.generateJwtToken(authentication);
 
-                final UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-                final List<String> roles = userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList();
-
-                return mapper.mapToLogOnResponse(jwt, userDetails.getUsername(), roles, validation);
+                return mapper.mapToLogOnResponse(jwt, validation);
             } else {
                 return mapper.mapToLogOnResponseException(validation);
             }
@@ -113,7 +105,7 @@ public class CustomerService {
             final String username = jwtUtils.getUserNameFromJwtToken(jwtUtils.parseAuthHeader(authorizationHeader));
             log.info("Overview endpoint JWT token username [{}]", username);
 
-            final Optional<Account> account = accountRepository.findByUsername(username);// find account with JWT username
+            final Optional<Account> account = accountRepository.findByUsername(username);// find account with username parsed from JWT
             if (account.isPresent()) {
                 return mapper.mapToOverviewResponse(account.get());
             } else {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.extractor.RegistrationExtractor;
+import com.github.zuch.onboarding.model.IdType;
 import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.config.AppConfigProperties;
 import com.github.zuch.onboarding.model.request.LogOnRequest;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,7 +77,7 @@ public class CustomerValidationService {
     /**
      * Validate a customer login payload with JSON Schema validation
      *
-     * @param registrationRequest payload
+     * @param logOnRequest payload
      * @return a Validation object
      * - set to valid
      * - or not valid with validation error messages

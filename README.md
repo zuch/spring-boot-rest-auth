@@ -92,26 +92,8 @@ application is running
 
 ```json
 {
-  "name": "Keanu",
-  "address": {
-    "street": "Korte Houtstraat",
-    "houseNumber": "20",
-    "postCode": "2511CD",
-    "city": "Den Haag"
-  },
-  "dateOfBirth": "1964-09-02",
-  "idDocument": {
-    "type": "ID_CARD",
-    "idNumber": 12345678,
-    "countryCode": "NL",
-    "issueDate": "2015-02-01",
-    "expiryDate": "2025-01-31"
-  },
-  "validation": {
-    "valid": true
-  },
   "username": "theone",
-  "password": "t6PsvEp4Bw"
+  "password": "AY3QbioL2k"
 }
 ```
 
@@ -128,7 +110,7 @@ application is running
 ```json
 {
   "username": "theone",
-  "password": "w2kfHZriif"
+  "password": "AY3QbioL2k"
 }
 ```
 
@@ -140,14 +122,7 @@ application is running
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUxNDk4MzUsImV4cCI6MTY5NTE2MDYzNX0.0a9CnELUsaVi7nnPRLOshn0wnlDjGNCWkqnlq62G8us",
-  "username": "theone",
-  "roles": [
-    "CUSTOMER"
-  ],
-  "validation": {
-    "valid": true
-  }
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU"
 }
 ```
 
@@ -157,7 +132,7 @@ application is running
 
 `Accept`: `application/json`
 
-`Authorization` : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUxNDk4MzUsImV4cCI6MTY5NTE2MDYzNX0.0a9CnELUsaVi7nnPRLOshn0wnlDjGNCWkqnlq62G8us`
+`Authorization` : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU`
 
 #### Example of a Overview response:
 
@@ -167,11 +142,11 @@ application is running
 
 ```json
 {
-  "iban": "NL97 XOZK 7476 9247 77",
-  "accountBalance": 13844.08,
-  "typeOfAccount": "SAVINGS",
+  "iban": "NL62VLET1423701633",
+  "accountBalance": 286663.71,
+  "accountType": "CURRENT",
   "currency": "EUR",
-  "openingDate": "2023-09-19T21:10:30.958745"
+  "openingDate": "2023-09-20T18:17:46.065199"
 }
 ```
 

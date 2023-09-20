@@ -76,13 +76,6 @@
             <version>${openapi.version}</version>
         </dependency>
 
-<!--        TODO Flyway -->
-        <!-- Flyway -->
-<!--        <dependency>-->
-<!--            <groupId>org.flywaydb</groupId>-->
-<!--            <artifactId>flyway-core</artifactId>-->
-<!--        </dependency>-->
-
         <!-- iban4j -->
         <dependency>
             <groupId>org.iban4j</groupId>

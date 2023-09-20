@@ -2,9 +2,7 @@ package com.github.zuch.onboarding.mapper;
 
 import com.github.zuch.onboarding.extractor.RegistrationExtractor;
 import com.github.zuch.onboarding.model.AccountType;
-import com.github.zuch.onboarding.model.Address;
 import com.github.zuch.onboarding.model.Currency;
-import com.github.zuch.onboarding.model.IdDocument;
 import com.github.zuch.onboarding.model.request.RegistrationRequest;
 import com.github.zuch.onboarding.model.response.LogOnResponse;
 import com.github.zuch.onboarding.model.response.OverviewResponse;
@@ -23,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 @Component
@@ -64,7 +61,7 @@ public class CustomerMapper {
                 .iban(generateIBAN(registrationRequest))
                 .username(RegistrationExtractor.username(registrationRequest))
                 .accountBalance(generateAccountBalance())
-                .typeOfAccount(generateTypeOfAccount())
+                .accountType(generateTypeOfAccount())
                 .currency(Currency.EUR)
                 .openingDate(LocalDateTime.now())
                 .build();
@@ -72,66 +69,23 @@ public class CustomerMapper {
 
     public RegistrationResponse mapToRegResponse(final User user, final Validation validation, final String password) {
         return RegistrationResponse.builder()
-                .name(user.getName())
-                .username(user.getUsername())
-                .address(
-                        Address.builder()
-                                .street(user.getAddressStreet())
-                                .houseNumber(user.getAddressHouseNumber())
-                                .postCode(user.getAddressPostCode())
-                                .city(user.getAddressCity())
-                                .build()
-                )
-                .dateOfBirth(user.getDateOfBirth())
-                .idDocument(
-                        IdDocument.builder()
-                                .type(user.getIdDocumentType())
-                                .idNumber(user.getIdDocumentNumber())
-                                .countryCode(user.getIdDocumentCountryCode())
-                                .issueDate(user.getIdDocumentIssueDate())
-                                .expiryDate(user.getIdDocumentExpiryDate())
-                                .build()
-                )
-                .validation(validation)
                 .username(user.getUsername())
                 .password(password)
+                .validation(validation)
                 .build();
     }
 
-    public RegistrationResponse mapToRegResponseException(final RegistrationRequest registrationRequest, final Validation validation) {
+    public RegistrationResponse mapToRegResponseException(final Validation validation) {
         return RegistrationResponse.builder()
-                .name(RegistrationExtractor.name(registrationRequest))
-                .username(RegistrationExtractor.username(registrationRequest))
-                .address(
-                        Address.builder()
-                                .street(RegistrationExtractor.addressStreet(registrationRequest))
-                                .houseNumber(RegistrationExtractor.addressHouseNumber(registrationRequest))
-                                .postCode(RegistrationExtractor.addressPostCode(registrationRequest))
-                                .city(RegistrationExtractor.addressCity(registrationRequest))
-                                .build()
-                )
-                .dateOfBirth(RegistrationExtractor.dateOfBirth(registrationRequest))
-                .idDocument(
-                        IdDocument.builder()
-                                .type(RegistrationExtractor.idType(registrationRequest))
-                                .idNumber(RegistrationExtractor.idNumber(registrationRequest))
-                                .countryCode(RegistrationExtractor.idCountryCode(registrationRequest))
-                                .issueDate(RegistrationExtractor.issueDate(registrationRequest))
-                                .expiryDate(RegistrationExtractor.idExpiryDate(registrationRequest))
-                                .build()
-                )
                 .validation(validation)
-                .username(RegistrationExtractor.username(registrationRequest))
                 .build();
     }
 
     //------------------------- LogOn -----------------------------
     public LogOnResponse mapToLogOnResponse(
-            final String jwt, final String username, final List<String> roles, final Validation validation) {
+            final String jwt, final Validation validation) {
         return LogOnResponse.builder()
                 .token(jwt)
-                .username(username)
-                .roles(roles)
                 .validation(validation)
                 .build();
     }
@@ -148,7 +102,7 @@ public class CustomerMapper {
         return OverviewResponse.builder()
                 .iban(account.getIban())
                 .accountBalance(account.getAccountBalance())
-                .typeOfAccount(account.getTypeOfAccount())
+                .accountType(account.getAccountType())
                 .currency(account.getCurrency())
                 .openingDate(account.getOpeningDate())
                 .validation(Validation.builder()
@@ -172,7 +126,7 @@ public class CustomerMapper {
             case "DE" -> Iban.random(CountryCode.DE);
             default -> Iban.random(CountryCode.NL);
         };
-        return iban.toFormattedString();
+        return iban.toString();
     }
 
     private BigDecimal generateAccountBalance() {

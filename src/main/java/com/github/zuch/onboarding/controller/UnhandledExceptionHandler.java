@@ -1,5 +1,6 @@
 package com.github.zuch.onboarding.controller;
 
+import com.github.zuch.onboarding.model.Validation;
 import com.github.zuch.onboarding.model.response.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.Collections;
 
 @Slf4j
 @ControllerAdvice
@@ -17,8 +20,15 @@ public class UnhandledExceptionHandler {
         log.error("Error while processing request", e);
 
         final String errorMessage = e.getMessage();
+        final ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+                .validation(
+                        Validation.builder()
+                                .valid(false)
+                                .validationMessages(Collections.singleton(errorMessage))
+                                .build()
+                )
+                .build();
 
-        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorMessage);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(apiErrorResponse);
     }
 }

@@ -40,8 +40,8 @@ import java.time.LocalDateTime;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
-    @SequenceGenerator(name = "account_generator", sequenceName = "account_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "acc_gen")
+    @SequenceGenerator(name = "acc_gen", sequenceName = "acc_seq")
     private Long id;
 
     @NotBlank
@@ -58,7 +58,7 @@ public class Account {
     @NotBlank
     @Size(max = 10)
     @Enumerated(EnumType.STRING)
-    private AccountType typeOfAccount;
+    private AccountType accountType;
 
     @NotBlank
     @Size(max = 3)
