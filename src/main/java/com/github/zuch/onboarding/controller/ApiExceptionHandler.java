@@ -16,7 +16,7 @@ import java.util.Collections;
 
 @Slf4j
 @ControllerAdvice
-public class UnhandledExceptionHandler {
+public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleException(final Exception e) {

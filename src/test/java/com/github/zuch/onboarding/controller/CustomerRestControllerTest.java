@@ -4,20 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zuch.onboarding.mapper.CustomerMapper;
 import com.github.zuch.onboarding.model.request.LogOnRequest;
 import com.github.zuch.onboarding.model.request.RegistrationRequest;
+import com.github.zuch.onboarding.model.response.ApiErrorResponse;
 import com.github.zuch.onboarding.model.response.LogOnResponse;
 import com.github.zuch.onboarding.model.response.OverviewResponse;
 import com.github.zuch.onboarding.model.response.RegistrationResponse;
+import com.github.zuch.onboarding.persistence.AccountRepository;
 import com.github.zuch.onboarding.persistence.RoleRepository;
 import com.github.zuch.onboarding.persistence.UserRepository;
 import com.github.zuch.onboarding.persistence.entity.Account;
 import com.github.zuch.onboarding.persistence.entity.Role;
 import com.github.zuch.onboarding.persistence.entity.Roles;
 import com.github.zuch.onboarding.persistence.entity.User;
+import com.github.zuch.onboarding.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,10 +30,14 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,14 +60,22 @@ class CustomerRestControllerTest {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    @SpyBean
+    private AccountRepository accountRepository;
+
+    @Autowired
+    @SpyBean
+    private CustomerService customerService;
 
     @Autowired
     MockMvc mockMvc;
 
     @BeforeEach
     public void setup() {
-        userRepository.deleteAll();
         roleRepository.deleteAll();
+        accountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -82,7 +98,7 @@ class CustomerRestControllerTest {
     }
 
     @Test
-    void given_invalidRegistration_when_PostedToRegisterAndUserAlreadyPersisted_then_400_ValidationError() throws Exception {
+    void given_invalidRegistrationUserAlreadyPersisted_when_PostedToRegisterAndUserAlreadyPersisted_then_400_ValidationError() throws Exception {
         // given
         File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
         RegistrationRequest reg = om.readValue(file, RegistrationRequest.class);
@@ -108,6 +124,50 @@ class CustomerRestControllerTest {
         assertFalse(response.getValidation().isValid());
         assertFalse(response.getValidation().getValidationMessages().isEmpty());
         assertEquals("username [theone] already exists", response.getValidation().getValidationMessages().stream().findFirst().get());
+    }
+
+    @Test
+    void given_validRegistration_when_PostedToRegisterEndpointAndExceptionOccurs_then_500_ApiErrorResponse() throws Exception {
+        // given
+        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
+
+        when(customerService.register(any(RegistrationRequest.class))).thenThrow(new RuntimeException("Error"));
+
+        // when
+        ApiErrorResponse response = om.readValue(
+                mockMvc.perform(post("/register")
+                                .contentType("application/json")
+                                .content(om.writeValueAsString(registrationRequest)))
+                        .andDo(print())
+                        .andExpect(status().isInternalServerError()).andReturn().getResponse().getContentAsString(), ApiErrorResponse.class);
+
+        // then
+        assertFalse(response.getValidation().isValid());
+        assertEquals("Error", response.getValidation().getValidationMessages().stream().findFirst().get());
+    }
+
+    @Test
+    void given_invalidRegistrationDateOfBirth_when_PostedToRegisterEndpoint_then_400_ApiErrorResponse() throws Exception {
+        // given
+        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
+        String payload = om.writeValueAsString(registrationRequest);
+        payload = payload.replace("1964-09-02", "02-09-1964");
+
+        // when
+        ApiErrorResponse response = om.readValue(
+                mockMvc.perform(post("/register")
+                                .contentType("application/json")
+                                .content(payload))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString(), ApiErrorResponse.class);
+
+        // then
+        assertFalse(response.getValidation().isValid());
+        assertEquals(
+                "JSON parse error: Cannot deserialize value of type `java.time.LocalDate` from String \"02-09-1964\": Failed to deserialize java.time.LocalDate: (java.time.format.DateTimeParseException) Text '02-09-1964' could not be parsed at index 0",
+                response.getValidation().getValidationMessages().stream().findFirst().get());
     }
 
     @Test
@@ -144,7 +204,7 @@ class CustomerRestControllerTest {
     }
 
     @Test
-    void given_invalidLogonAnd_when_PostedToLogonEndpoint_then_401_UnauthorizedWithValidationError() throws Exception {
+    void given_invalidLogonEmptyPassWord_when_PostedToLogonEndpoint_then_401_UnauthorizedWithValidationError() throws Exception {
         // given
         File logOnFile = resourceLoader.getResource("classpath:json/logon_invalid_empty_password.json").getFile();
         LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
@@ -162,9 +222,59 @@ class CustomerRestControllerTest {
         assertEquals("$.password: is missing but it is required", logOnResponse.getValidation().getValidationMessages().stream().findFirst().get());
     }
 
+    /**
+     * Happy Path
+     *
+     * @throws Exception
+     */
     @Test
-    void given_CustomerRegisteredAndValidLogon_when_PostedToOverviewEndpoint_then_200_OverviewResponse() throws Exception {
+    void given_validCustomerRegisteredAndValidLogon_when_PostedToOverviewEndpoint_then_200_OverviewResponse() throws Exception {
         // given
+        LogOnResponse logOnResponse = registerAndLogOn();
+
+        // when - get from /overview with JWT Token in Authorization header
+        OverviewResponse response = om.readValue(
+                mockMvc.perform(get("/overview")
+                                .contentType("application/json")
+                                .header("authorization", "Bearer " + logOnResponse.getToken())
+                        )
+                        .andDo(print())
+                        .andExpect(jsonPath("$.iban", notNullValue()))
+                        .andExpect(jsonPath("$.accountBalance", notNullValue()))
+                        .andExpect(jsonPath("$.accountType", notNullValue()))
+                        .andExpect(jsonPath("$.currency", notNullValue()))
+                        .andExpect(jsonPath("$.openingDate", notNullValue()))
+                        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), OverviewResponse.class);
+
+        // then
+        assertFalse(response.getIban().isEmpty());
+    }
+
+    /**
+     * Register & Logon Successfully but no account persisted for username
+     *
+     * @throws Exception
+     */
+    @Test
+    void given_validCustomerRegisteredAndValidLogon_when_PostedToOverviewEndpointAndNoAccountForUserPersisted_then_401_OverviewResponse() throws Exception {
+        // given
+        LogOnResponse logOnResponse = registerAndLogOn();
+        when(accountRepository.findByUsername(anyString())).thenReturn(null);
+
+        // when - get from /overview with JWT Token in Authorization header
+        OverviewResponse response = om.readValue(
+                mockMvc.perform(get("/overview")
+                                .contentType("application/json")
+                                .header("authorization", "Bearer " + logOnResponse.getToken())
+                        )
+                        .andDo(print())
+                        .andExpect(status().isUnauthorized()).andReturn().getResponse().getContentAsString(), OverviewResponse.class);
+
+        // then
+        assertFalse(response.getValidation().isValid());
+    }
+
+    private LogOnResponse registerAndLogOn() throws Exception {
         File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
         RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
@@ -193,22 +303,7 @@ class CustomerRestControllerTest {
 
         Thread.sleep(1000);// wait 1s for RateLimiter
 
-        // when - get from /overview with JWT Token in Authorization header
-        OverviewResponse overviewResponse = om.readValue(
-                mockMvc.perform(get("/overview")
-                                .contentType("application/json")
-                                .header("authorization", "Bearer " + logOnResponse.getToken())
-                        )
-                        .andDo(print())
-                        .andExpect(jsonPath("$.iban", notNullValue()))
-                        .andExpect(jsonPath("$.accountBalance", notNullValue()))
-                        .andExpect(jsonPath("$.accountType", notNullValue()))
-                        .andExpect(jsonPath("$.currency", notNullValue()))
-                        .andExpect(jsonPath("$.openingDate", notNullValue()))
-                        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), OverviewResponse.class);
-
-        // then
-        assertFalse(overviewResponse.getIban().isEmpty());
+        return logOnResponse;
     }
 
     @Test
@@ -232,22 +327,28 @@ class CustomerRestControllerTest {
     }
 
     /**
-     * Test rate limit of 2 times per second by receiving 429 on a third request to /register
+     * Test rate limit of 2 times per second by receiving 429 on a fourth request to /register
      *
      * @throws Exception
      */
     @Test
-    void given_validRegistration_when_PostedToRegisterEndpointFourTimes_then_FirstCall201_SecondCall400_ThirdCall429() throws Exception {
+    void given_validRegistration_when_PostedToRegisterEndpointFourTimes_then_FirstCall201_SecondCall400_FourthCall429() throws Exception {
         // given
         File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
         RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
-        // call /register 3 times
-        for (int i = 0; i < 3; i++) {
-            mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                            .contentType("application/json")
-                            .content(om.writeValueAsString(registrationRequest)))
-                    .andExpect(getStatusMatcher(i));
+        // call /register 4 times
+        for (int i = 0; i < 4; i++) {
+            if (i == 2) { // skip assertion of 3rd call
+                mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType("application/json")
+                        .content(om.writeValueAsString(registrationRequest)));
+            } else {
+                mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                                .contentType("application/json")
+                                .content(om.writeValueAsString(registrationRequest)))
+                        .andExpect(getStatusMatcher(i));
+            }
         }
     }
 
@@ -255,8 +356,7 @@ class CustomerRestControllerTest {
         return switch (i) {
             case 0 -> status().isCreated();
             case 1 -> status().isBadRequest();
-            case 2 -> status().isTooManyRequests();
-            default -> status().isNotFound();
+            default -> status().isTooManyRequests();
         };
     }
 }
