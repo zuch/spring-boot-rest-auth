@@ -14,7 +14,6 @@ import com.github.zuch.onboarding.persistence.entity.Role;
 import com.github.zuch.onboarding.persistence.entity.Roles;
 import com.github.zuch.onboarding.persistence.entity.User;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +22,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
@@ -231,30 +231,32 @@ class CustomerRestControllerTest {
         assertEquals("Full authentication is required to access this resource", overviewResponse.getValidation().getValidationMessages().stream().findFirst().get());
     }
 
-    //Test rate limit of 2 times per second by receiving 429 on a third request to /register
+    /**
+     * Test rate limit of 2 times per second by receiving 429 on a third request to /register
+     *
+     * @throws Exception
+     */
     @Test
-    @Disabled
     void given_validRegistration_when_PostedToRegisterEndpointFourTimes_then_FirstCall201_SecondCall400_ThirdCall429() throws Exception {
         // given
         File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
         RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
-        // 1st call
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                        .contentType("application/json")
-                        .content(om.writeValueAsString(registrationRequest)))
-                .andExpect(status().isCreated());
+        // call /register 3 times
+        for (int i = 0; i < 3; i++) {
+            mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                            .contentType("application/json")
+                            .content(om.writeValueAsString(registrationRequest)))
+                    .andExpect(getStatusMatcher(i));
+        }
+    }
 
-        // 2nd call
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                        .contentType("application/json")
-                        .content(om.writeValueAsString(registrationRequest)))
-                .andExpect(status().isBadRequest());
-
-        // 3rd call
-        mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                        .contentType("application/json")
-                        .content(om.writeValueAsString(registrationRequest)))
-                .andExpect(status().isTooManyRequests());
+    private static ResultMatcher getStatusMatcher(int i) {
+        return switch (i) {
+            case 0 -> status().isCreated();
+            case 1 -> status().isBadRequest();
+            case 2 -> status().isTooManyRequests();
+            default -> status().isNotFound();
+        };
     }
 }

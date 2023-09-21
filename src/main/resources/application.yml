@@ -13,7 +13,7 @@ resilience4j:
         timeout-duration: 0s
 
 app:
-  jwt-secret: "RALCARYCendULashWanalCOweineTIMATENtOrmARBIlbAgrAp"
+  jwt-secret: "SECRETSECRETSECRETSECRETSECRETSECRETSECRETSECRET"
   jwt-expiration-ms: 10800000 #3 Hrs
   countryAllowedList:
     - NL

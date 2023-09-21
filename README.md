@@ -41,19 +41,19 @@ mvn clean test
 
 ## PostMan Collection
 
-Import the PostMan Collection with `Customer Onboarding API.postman_collection.json` file found under root location
+Import the PostMan Collection with `Customer_Onboarding_API.postman_collection.json` file found under root location
 
 ## Open API
 
-The Open API UI for the endpoints below can be found with this [URL](http://localhost:8080/swagger-ui/index.html) once
-the
-application is running
+The Open API UI for the endpoints below can be seen with http://localhost:8080/swagger-ui/index.html once the application is running
 
 ## Endpoints:
 
 ### **POST** `/register`:
 
 `POST`: http://localhost:8080/register
+
+#### Request Headers:
 
 `Content-Type`: `application/json`
 
@@ -83,13 +83,15 @@ application is running
 }
 ```
 
-#### Example of a Registration response:
+#### Response Status Codes:
 
 `200`: If Customer Registered successfully
 
 `400`: If validation rule triggered
 
 `429`: If more than 2 requests per second sent
+
+#### Example of a Registration response:
 
 ```json
 {
@@ -101,6 +103,8 @@ application is running
 ### **POST** `/logon`:
 
 `POST`: http://localhost:8080/logon
+
+#### Request Headers:
 
 `Content-Type`: `application/json`
 
@@ -115,13 +119,15 @@ application is running
 }
 ```
 
-#### Example of a Logon response:
+#### Response Status Codes:
 
 `200`: If Username & Password authorization successfully
 
 `401`: If Username & Password authorization denied
 
 `429`: If more than 2 requests per second sent
+
+#### Example of a Logon response:
 
 ```json
 {
@@ -133,17 +139,21 @@ application is running
 
 `GET`: http://localhost:8080/overview
 
+#### Request Headers:
+
 `Accept`: `application/json`
 
 `Authorization` : `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU`
 
-#### Example of a Overview response:
+#### Response Status Codes:
 
 `200`: If JWT Token authorization successfully
 
 `401`: If JWT Token authorization denied
 
 `429`: If more than 2 requests per second sent
+
+#### Example of a Overview response:
 
 ```json
 {
