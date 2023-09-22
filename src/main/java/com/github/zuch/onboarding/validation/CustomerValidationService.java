@@ -63,6 +63,7 @@ public class CustomerValidationService {
             isValidCountyCode(registrationRequest, customValidationMessages);
             isValidDateOfBirth(registrationRequest, customValidationMessages);
             isValidUserName(registrationRequest, customValidationMessages);
+            isValidIdExpiryDate(registrationRequest, customValidationMessages);
 
             if (!customValidationMessages.isEmpty()) { //custom validation error found
                 return validationMessageUtil.createValidationFailed(customValidationMessages);
@@ -188,6 +189,20 @@ public class CustomerValidationService {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             final String validationMessage = String.format("username [%s] already exists", username);
+            customValidationMessages.add(validationMessage);
+        }
+    }
+
+    /**
+     * Customers id expiryDate already expired
+     *
+     * @param registrationRequest      payload
+     * @param customValidationMessages
+     */
+    public void isValidIdExpiryDate(final RegistrationRequest registrationRequest, final List<String> customValidationMessages) {
+        final LocalDate expiryDate = RegistrationExtractor.idExpiryDate(registrationRequest);
+        if (expiryDate.isBefore(LocalDate.now())) {
+            final String validationMessage = String.format("Customer Id has expired with date [%s]", expiryDate);
             customValidationMessages.add(validationMessage);
         }
     }

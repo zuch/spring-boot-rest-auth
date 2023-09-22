@@ -20,7 +20,6 @@ import com.github.zuch.onboarding.persistence.entity.User;
 import com.github.zuch.onboarding.security.jwt.JwtUtils;
 import com.github.zuch.onboarding.validation.CustomerValidationService;
 import com.github.zuch.onboarding.validation.ValidationMessageUtil;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

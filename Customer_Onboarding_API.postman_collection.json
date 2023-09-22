@@ -238,6 +238,44 @@
 					"response": []
 				},
 				{
+					"name": "register customer - invalid id expiryDate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Keanu\",\r\n  \"surname\": \"Reeves\",\r\n  \"address\": {\r\n    \"street\": \"Korte Houtstraat\",\r\n    \"houseNumber\": \"20\",\r\n    \"postCode\": \"2511CD\",\r\n    \"city\": \"Den Haag\"\r\n  },\r\n  \"dateOfBirth\": \"1964-09-02\",\r\n  \"idDocument\": {\r\n    \"type\": \"ID_CARD\",\r\n    \"idNumber\": 12345678,\r\n    \"countryCode\": \"NL\",\r\n    \"issueDate\": \"2015-02-01\",\r\n    \"expiryDate\": \"2023-09-21\"\r\n  },\r\n  \"username\": \"theone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/register",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "register customer - invalid idType",
 					"request": {
 						"method": "POST",
@@ -294,6 +332,44 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n  \"name\": \"Keanu\",\r\n  \"surname\": \"Reeves\",\r\n  \"address\": {\r\n    \"street\": \"Korte Houtstraat\",\r\n    \"houseNumber\": \"20\",\r\n    \"postCode\": \"2511CD\",\r\n    \"city\": \"Den Haag\"\r\n  },\r\n  \"dateOfBirth\": \"1964-09-02\",\r\n  \"idDocument\": {\r\n    \"type\": \"ID_CARD\",\r\n    \"idNumber\": \"abcdef\",\r\n    \"countryCode\": \"NL\",\r\n    \"issueDate\": \"2015-02-01\",\r\n    \"expiryDate\": \"2025-01-31\"\r\n  },\r\n  \"username\": \"theone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/register",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register customer - invalid fields sizes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"KeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanu\",\r\n  \"surname\": \"ReevesReevesReevesReevesReevesReevesReevesReevesReeves\",\r\n  \"address\": {\r\n    \"street\": \"Korte HoutstraatKorte HoutstraatKorte HoutstraatKorte Houtstraat\",\r\n    \"houseNumber\": \"202020202020\",\r\n    \"postCode\": \"2511CD2511CD2511CD\",\r\n    \"city\": \"Den HaagDen HaagDen HaagDen HaagDen HaagDen HaagDen Haag\"\r\n  },\r\n  \"dateOfBirth\": \"1964-09-02\",\r\n  \"idDocument\": {\r\n    \"type\": \"ID_CARD\",\r\n    \"idNumber\": 12345678,\r\n    \"countryCode\": \"NLNL\",\r\n    \"issueDate\": \"2015-02-01\",\r\n    \"expiryDate\": \"2025-01-31\"\r\n  },\r\n  \"username\": \"theonetheonetheonetheone\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

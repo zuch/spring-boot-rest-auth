@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,11 +80,11 @@ class CustomerRestControllerTest {
     @Test
     void given_validRegistration_when_PostedToRegisterEndpoint_then_201_Persisted() throws Exception {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
 
         // when
-        RegistrationResponse response = om.readValue(
+        final RegistrationResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(registrationRequest)))
@@ -100,20 +99,20 @@ class CustomerRestControllerTest {
     @Test
     void given_invalidRegistrationUserAlreadyPersisted_when_PostedToRegisterAndUserAlreadyPersisted_then_400_ValidationError() throws Exception {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest reg = om.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest reg = om.readValue(file, RegistrationRequest.class);
 
         // persist role
-        Role role = Role.builder().username(reg.getUsername()).name(Roles.CUSTOMER).build();
-        Role savedRole = roleRepository.save(role);
+        final Role role = Role.builder().username(reg.getUsername()).name(Roles.CUSTOMER).build();
+        final Role savedRole = roleRepository.save(role);
 
         // persist the same customer already
-        Account account = Account.builder().username(reg.getUsername()).build();
-        User user = customerMapper.mapToUser(reg, savedRole, account, "w2kfHZriif");
+        final Account account = Account.builder().username(reg.getUsername()).build();
+        final User user = customerMapper.mapToUser(reg, savedRole, account, "w2kfHZriif");
         userRepository.save(user);
 
         // when
-        RegistrationResponse response = om.readValue(
+        final RegistrationResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(reg)))
@@ -129,13 +128,13 @@ class CustomerRestControllerTest {
     @Test
     void given_validRegistration_when_PostedToRegisterEndpointAndExceptionOccurs_then_500_ApiErrorResponse() throws Exception {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
 
         when(customerService.register(any(RegistrationRequest.class))).thenThrow(new RuntimeException("Error"));
 
         // when
-        ApiErrorResponse response = om.readValue(
+        final ApiErrorResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(registrationRequest)))
@@ -150,13 +149,13 @@ class CustomerRestControllerTest {
     @Test
     void given_invalidRegistrationDateOfBirth_when_PostedToRegisterEndpoint_then_400_ApiErrorResponse() throws Exception {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(file, RegistrationRequest.class);
         String payload = om.writeValueAsString(registrationRequest);
         payload = payload.replace("1964-09-02", "02-09-1964");
 
         // when
-        ApiErrorResponse response = om.readValue(
+        final ApiErrorResponse response = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(payload))
@@ -173,11 +172,11 @@ class CustomerRestControllerTest {
     @Test
     void given_validLogonAnd_when_PostedToLogonEndpoint_then_200_AuthorizedWithJwtToken() throws Exception {
         // given
-        File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
+        final File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
         // customer registered
-        RegistrationResponse regResponse = om.readValue(
+        final RegistrationResponse regResponse = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(registrationRequest)))
@@ -186,12 +185,12 @@ class CustomerRestControllerTest {
                         .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), RegistrationResponse.class);
 
         // logon request with password from registration regResponse
-        File logOnFile = resourceLoader.getResource("classpath:json/logon_valid.json").getFile();
-        LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
+        final File logOnFile = resourceLoader.getResource("classpath:json/logon_valid.json").getFile();
+        final LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
         logOnRequest.setPassword(regResponse.getPassword());
 
         // when
-        LogOnResponse logOnResponse = om.readValue(
+        final LogOnResponse logOnResponse = om.readValue(
                 mockMvc.perform(post("/logon")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(logOnRequest)))
@@ -206,11 +205,11 @@ class CustomerRestControllerTest {
     @Test
     void given_invalidLogonEmptyPassWord_when_PostedToLogonEndpoint_then_401_UnauthorizedWithValidationError() throws Exception {
         // given
-        File logOnFile = resourceLoader.getResource("classpath:json/logon_invalid_empty_password.json").getFile();
-        LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
+        final File logOnFile = resourceLoader.getResource("classpath:json/logon_invalid_empty_password.json").getFile();
+        final LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
 
         // when
-        LogOnResponse logOnResponse = om.readValue(
+        final LogOnResponse logOnResponse = om.readValue(
                 mockMvc.perform(post("/logon")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(logOnRequest)))
@@ -230,10 +229,10 @@ class CustomerRestControllerTest {
     @Test
     void given_validCustomerRegisteredAndValidLogon_when_PostedToOverviewEndpoint_then_200_OverviewResponse() throws Exception {
         // given
-        LogOnResponse logOnResponse = registerAndLogOn();
+        final LogOnResponse logOnResponse = registerAndLogOn();
 
         // when - get from /overview with JWT Token in Authorization header
-        OverviewResponse response = om.readValue(
+        final OverviewResponse response = om.readValue(
                 mockMvc.perform(get("/overview")
                                 .contentType("application/json")
                                 .header("authorization", "Bearer " + logOnResponse.getToken())
@@ -258,11 +257,11 @@ class CustomerRestControllerTest {
     @Test
     void given_validCustomerRegisteredAndValidLogon_when_PostedToOverviewEndpointAndNoAccountForUserPersisted_then_401_OverviewResponse() throws Exception {
         // given
-        LogOnResponse logOnResponse = registerAndLogOn();
+        final LogOnResponse logOnResponse = registerAndLogOn();
         when(accountRepository.findByUsername(anyString())).thenReturn(null);
 
         // when - get from /overview with JWT Token in Authorization header
-        OverviewResponse response = om.readValue(
+        final OverviewResponse response = om.readValue(
                 mockMvc.perform(get("/overview")
                                 .contentType("application/json")
                                 .header("authorization", "Bearer " + logOnResponse.getToken())
@@ -275,11 +274,11 @@ class CustomerRestControllerTest {
     }
 
     private LogOnResponse registerAndLogOn() throws Exception {
-        File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
+        final File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
         // post to /register
-        RegistrationResponse regResponse = om.readValue(
+        final RegistrationResponse regResponse = om.readValue(
                 mockMvc.perform(post("/register")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(registrationRequest)))
@@ -288,12 +287,12 @@ class CustomerRestControllerTest {
                         .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), RegistrationResponse.class);
 
         // logon request with password from registration regResponse
-        File logOnFile = resourceLoader.getResource("classpath:json/logon_valid.json").getFile();
-        LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
+        final File logOnFile = resourceLoader.getResource("classpath:json/logon_valid.json").getFile();
+        final LogOnRequest logOnRequest = om.readValue(logOnFile, LogOnRequest.class);
         logOnRequest.setPassword(regResponse.getPassword());
 
         // post to /logon
-        LogOnResponse logOnResponse = om.readValue(
+        final LogOnResponse logOnResponse = om.readValue(
                 mockMvc.perform(post("/logon")
                                 .contentType("application/json")
                                 .content(om.writeValueAsString(logOnRequest)))
@@ -309,10 +308,10 @@ class CustomerRestControllerTest {
     @Test
     void given_invalidOverviewRequest_when_PostedToOverviewEndpoint_then_401_Unauthorized() throws Exception {
         // given
-        String invalidJwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU";
+        final String invalidJwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGVvbmUiLCJpYXQiOjE2OTUyMzM4NzMsImV4cCI6MTY5NTI0NDY3M30.F84rQJIKp6uwjOpFkEK-rD9GzOaajmCRBJqTpFjMKnU";
 
         // when - get from /overview with JWT Token in Authorization header
-        OverviewResponse overviewResponse = om.readValue(
+        final OverviewResponse overviewResponse = om.readValue(
                 mockMvc.perform(get("/overview")
                                 .contentType("application/json")
                                 .header("authorization", "Bearer " + invalidJwtToken)
@@ -334,8 +333,8 @@ class CustomerRestControllerTest {
     @Test
     void given_validRegistration_when_PostedToRegisterEndpointFourTimes_then_FirstCall201_SecondCall400_FourthCall429() throws Exception {
         // given
-        File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
+        final File regFile = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = om.readValue(regFile, RegistrationRequest.class);
 
         // call /register 4 times
         for (int i = 0; i < 4; i++) {

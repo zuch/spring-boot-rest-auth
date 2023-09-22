@@ -6,11 +6,13 @@
   "properties": {
     "username": {
       "description": "The username of a customer",
-      "type": "string"
+      "type": "string",
+      "maxLength": 20
     },
     "password": {
       "description": "The password of a customer",
-      "type": "string"
+      "type": "string",
+      "maxLength": 120
     }
   },
   "required": [

@@ -82,6 +82,7 @@ public class CustomerMapper {
     }
 
     //------------------------- LogOn -----------------------------
+
     public LogOnResponse mapToLogOnResponse(
             final String jwt, final Validation validation) {
         return LogOnResponse.builder()
@@ -119,6 +120,7 @@ public class CustomerMapper {
 
 
     //------------------------- generators -----------------------------
+
     private String generateIBAN(final RegistrationRequest registrationRequest) {
         final String countryCode = RegistrationExtractor.idCountryCode(registrationRequest);
         final Iban iban = switch (countryCode) {

@@ -1,0 +1,19 @@
+{
+  "name": "KeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanuKeanu",
+  "surname": "ReevesReevesReevesReevesReevesReevesReevesReevesReeves",
+  "address": {
+    "street": "Korte HoutstraatKorte HoutstraatKorte HoutstraatKorte Houtstraat",
+    "houseNumber": "202020202020",
+    "postCode": "2511CD2511CD2511CD",
+    "city": "Den HaagDen HaagDen HaagDen HaagDen HaagDen HaagDen Haag"
+  },
+  "dateOfBirth": "1964-09-02",
+  "idDocument": {
+    "type": "ID_CARD",
+    "idNumber": 12345678,
+    "countryCode": "NLNL",
+    "issueDate": "2015-02-01",
+    "expiryDate": "2025-01-31"
+  },
+  "username": "theonetheonetheonetheone"
+}

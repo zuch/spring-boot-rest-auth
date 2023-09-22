@@ -91,7 +91,7 @@ public class User {
     private int idDocumentNumber;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 2)
     private String idDocumentCountryCode;
 
     @NotBlank

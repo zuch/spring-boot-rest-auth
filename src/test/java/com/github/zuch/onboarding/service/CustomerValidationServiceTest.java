@@ -24,6 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,11 +64,11 @@ class CustomerValidationServiceTest {
     @Test
     void given_validRegistration_when_ValidationChecked_then_ValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registrationRequest);
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertTrue(validation.isValid());
@@ -75,17 +77,17 @@ class CustomerValidationServiceTest {
     @Test
     void given_invalidRegistrationNoAddressAndUsername_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_invalid_no_address_and_username.json").getFile();
-        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_invalid_no_address_and_username.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registrationRequest);
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
 
-        Set<String> messages = validation.getValidationMessages();
-        String[] messagesArray = new String[messages.size()];
+        final Set<String> messages = validation.getValidationMessages();
+        final String[] messagesArray = new String[messages.size()];
         messages.toArray(messagesArray);
 
         assertEquals("$.address: is missing but it is required", messagesArray[0]);
@@ -95,11 +97,11 @@ class CustomerValidationServiceTest {
     @Test
     void given_invalidRegistrationEmptyCountryCode_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_invalid_empty_countrycode.json").getFile();
-        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_invalid_empty_countrycode.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registrationRequest);
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -109,11 +111,11 @@ class CustomerValidationServiceTest {
     @Test
     void given_invalidRegistrationIncorrectCountryCode_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_invalid_incorrect_countrycode.json").getFile();
-        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_invalid_incorrect_countrycode.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
 
         // when
-        Validation validation = customerValidationService.validateReg(registrationRequest);
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -123,12 +125,12 @@ class CustomerValidationServiceTest {
     @Test
     void given_invalidRegistrationYoungerThan18_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
         registrationRequest.setDateOfBirth(LocalDate.now().minusYears(17));
 
         // when
-        Validation validation = customerValidationService.validateReg(registrationRequest);
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
 
         // then
         assertFalse(validation.isValid());
@@ -136,22 +138,66 @@ class CustomerValidationServiceTest {
     }
 
     @Test
+    void given_invalidRegistrationIdExpired_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
+        // given
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+        final LocalDate expiryDate = LocalDate.now().minusDays(1);
+        registrationRequest.getIdDocument().setExpiryDate(expiryDate);
+
+        // when
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
+
+        // then
+        assertFalse(validation.isValid());
+        assertEquals(String.format("Customer Id has expired with date [%s]", expiryDate), validation.getValidationMessages().stream().findFirst().get());
+    }
+
+    @Test
+    void given_invalidRegistrationFieldValuesTooLong_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
+        // given
+        final File file = resourceLoader.getResource("classpath:json/registration_invalid_field_sizes.json").getFile();
+        final RegistrationRequest registrationRequest = objectMapper.readValue(file, RegistrationRequest.class);
+
+        // when
+        final Validation validation = customerValidationService.validateReg(registrationRequest);
+
+        // then
+        assertFalse(validation.isValid());
+
+        final List<String> expectedMessages = Arrays.asList(
+                "$.address.houseNumber: may only be 10 characters long",
+                "$.address.postCode: may only be 10 characters long",
+                "$.username: may only be 20 characters long",
+                "$.name: may only be 50 characters long",
+                "$.address.city: may only be 50 characters long",
+                "$.surname: may only be 50 characters long",
+                "$.address.street: may only be 50 characters long",
+                "$.idDocument.countryCode: may only be 2 characters long");
+        final List<String> validationMessages = validation.getValidationMessages().stream().toList();
+
+        for (int i = 0; i < validation.getValidationMessages().size(); i++) {
+            assertEquals(expectedMessages.get(i), validationMessages.get(i));
+        }
+    }
+
+    @Test
     void given_invalidRegistrationUsernameAlreadyExists_when_ValidationChecked_then_InValidValidationReturned() throws IOException {
         // given
-        File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
-        RegistrationRequest reg = objectMapper.readValue(file, RegistrationRequest.class);
+        final File file = resourceLoader.getResource("classpath:json/registration_valid.json").getFile();
+        final RegistrationRequest reg = objectMapper.readValue(file, RegistrationRequest.class);
 
         // persist role
-        Role role = Role.builder().username(reg.getUsername()).name(Roles.CUSTOMER).build();
+        final Role role = Role.builder().username(reg.getUsername()).name(Roles.CUSTOMER).build();
         Role savedRolde = roleRepository.save(role);
 
         // persist the same customer already
-        Account account = Account.builder().username(reg.getUsername()).build();
-        User user = customerMapper.mapToUser(reg, savedRolde, account, "w2kfHZriif");
+        final Account account = Account.builder().username(reg.getUsername()).build();
+        final User user = customerMapper.mapToUser(reg, savedRolde, account, "w2kfHZriif");
         userRepository.save(user);
 
         // when
-        Validation validation = customerValidationService.validateReg(reg);
+        final Validation validation = customerValidationService.validateReg(reg);
 
         // then
         assertFalse(validation.isValid());

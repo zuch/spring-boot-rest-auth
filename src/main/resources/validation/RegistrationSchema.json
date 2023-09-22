@@ -6,11 +6,13 @@
   "properties": {
     "name": {
       "description": "The first name of a customer",
-      "type": "string"
+      "type": "string",
+      "maxLength": 50
     },
     "surname": {
       "description": "The last name of a customer",
-      "type": "string"
+      "type": "string",
+      "maxLength": 50
     },
     "address": {
       "type": "object",
@@ -18,19 +20,23 @@
       "properties": {
         "street": {
           "description": "The street of where a customer lives",
-          "type": "string"
+          "type": "string",
+          "maxLength": 50
         },
         "houseNumber": {
           "description": "The house number of where a customer lives",
-          "type": "string"
+          "type": "string",
+          "maxLength": 10
         },
         "postCode": {
           "description": "The post code of where a customer lives",
-          "type": "string"
+          "type": "string",
+          "maxLength": 10
         },
         "city": {
           "description": "The city of where a customer lives",
-          "type": "string"
+          "type": "string",
+          "maxLength": 50
         }
       },
       "required": [
@@ -59,7 +65,8 @@
         },
         "countryCode": {
           "description": "The ISO-3166 2 digit code of the country where a customer's ID was issued",
-          "type": "string"
+          "type": "string",
+          "maxLength": 2
         },
         "issueDate": {
           "description": "The issue date for the customer's ID",
@@ -81,7 +88,8 @@
     },
     "username": {
       "description": "The username chosen by a customer",
-      "type": "string"
+      "type": "string",
+      "maxLength": 20
     }
   },
   "required": [
